@@ -1,0 +1,2 @@
+
+int generate(int limit);

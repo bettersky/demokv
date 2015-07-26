@@ -1,5 +1,15 @@
+//flash.h
+#define PAGE_BYTES 1024  //1KB
+#define BLOCK_PAGES 4096 //4K pages a block
+#define BLOCK_BYTES 4194304 //4MB
+#define SEGMENT_BLOCKS 1 //1 block
+#define VERSION_BYTES 4
 
-
+struct DEVICE{
+	unsigned char * mmap_begin;
+	uint64_t segment_bytes;
+	
+};
 int flash_open(); //if the device is fit to flashkv, then call this function to obtain internal information and 
 					//store them in some structures
 
