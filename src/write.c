@@ -10,7 +10,7 @@
 extern struct DEVICE device;
 extern struct ATABLE *active_table;//defined in egtable.h //for test
 
-int write(){
+int kv_write(){
 	printf("i am write\n");	
 	printf("device.mmap_begin=%p\n",device.mmap_begin);
 	/*
@@ -28,13 +28,13 @@ int write(){
 	*(key+i)='\0';
 	printf("key=%s\n",key);
 	*/
-	
+	FILE *kvfile=fopen("../udev","r");
 	uint64_t i;
-	for(i=0;i<20;i++){
+	for(i=0;i<100;i++){
 		char *key=malloc(20);;
 		char *value=malloc(40);
-		*key=i+97;
-		*value=i+65;
+		fscanf(kvfile,"%5s",key);
+		fscanf(kvfile,"%10s",value);
 		put(key,value);
 	}
 	

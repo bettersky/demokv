@@ -5,6 +5,8 @@
 #define SEGMENT_BLOCKS 1 //1 block
 #define VERSION_BYTES 4
 
+#define test_seg_bytes 200
+
 struct DEVICE{
 	unsigned char * mmap_begin;
 	uint64_t segment_bytes;

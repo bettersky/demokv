@@ -4,11 +4,15 @@
 #include "flash.h"
 #include "segtable.h"
 
-char * lev0[LEV0_NUM];
+struct LEV0 * lev0_head;
+
+char * lev0_tables[LEV0_NUM];
 
 struct DEVICE device;
 
 struct ATABLE *active_table;
+
+char *table_finder_0;
 
 
 int test(){
@@ -16,6 +20,6 @@ int test(){
 	char *args="/dev/sdp";
 	flash_init(args);
 	
-	write();
+	kv_write();
 
 }

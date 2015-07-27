@@ -11,6 +11,7 @@
 
 extern struct DEVICE device;
 extern struct ATABLE *active_table;//defined in egtable.h
+extern char *table_finder_0;
 
 
 int read_disk(void *);
@@ -45,18 +46,26 @@ int read_disk(void * args){
 		
 	uint64_t bytes_offset=0;
 	unsigned char*	dev=(unsigned char*)mmap(NULL,blk64,PROT_WRITE,MAP_SHARED,fd,bytes_offset);
+	
 	printf("dev=%p\n",dev);
+	*dev='g';
 	device.mmap_begin=dev;
-	device.segment_bytes=4;//SEGMENT_BLOCKS*BLOCK_BYTES;
+	device.segment_bytes=test_seg_bytes;//SEGMENT_BLOCKS*BLOCK_BYTES;
 	printf("device.mmap_begin=%p\n",device.mmap_begin);
 
 
 }
 
 int init_ftl(){
+	printf("i am init_ftl\n");
 	FILE *map_table=fopen("../ftl/map_table","r+");
 	FILE *log_pointer=fopen("../ftl/log_pointer","r+");
-	printf("map_table=%p, log_pointer=%p\n",map_table,log_pointer);
+	int fd_table_finder_0=open("../ftl/table_finder_0",O_RDWR);
+	int res=lseek(fd_table_finder_0,PAGE_BYTES-1,SEEK_SET);
+	write(fd_table_finder_0,"\0",1);
+	table_finder_0=(char *)mmap(NULL, PAGE_BYTES ,PROT_WRITE,MAP_SHARED,fd_table_finder_0,0);
+	memset(table_finder_0, 0, PAGE_BYTES);
+	printf("map_table=%p, log_pointer=%p, table_finder_0=%p\n",map_table,log_pointer,table_finder_0);
 	uint64_t i;
 	for(i=0;i<100;i++){
 		//fprintf(map_table,"%019d\n",i);
@@ -68,6 +77,13 @@ int init_ftl(){
 	uint64_t phy;
 	fscanf(map_table,"%llu",&phy);
 	printf("phy:%d\n",phy);
+	
+	 /*
+	for(i=0;i<LEV0_NUM+1;i++){
+		memcpy(table_finder_0+ (i+1)*(FINDER_KEY_LENGTH*2 +1) -1 ,"\n",1);
+		//fseek(table_finder_0, (FINDER_KEY_LENGTH*2 +1 ) * i, SEEK_SET);		
+	}
+	*/
 
 }
 
