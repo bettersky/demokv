@@ -6,13 +6,14 @@
 #include "flash.h"
 #include "segtable.h"
 #include "tools.h"
+extern char *levels_summary;
 
 extern struct DEVICE device;
 extern struct ATABLE *active_table;//defined in egtable.h //for test
 
 int kv_write(){
 	printf("i am write\n");	
-	printf("device.mmap_begin=%p\n",device.mmap_begin);
+	//printf("device.mmap_begin=%p\n",device.mmap_begin);
 	/*
 	srand(time(NULL));
 	int r = rand();
@@ -30,17 +31,15 @@ int kv_write(){
 	*/
 	FILE *kvfile=fopen("../udev","r");
 	uint64_t i;
-	for(i=0;i<100;i++){
-		char *key=malloc(20);;
-		char *value=malloc(40);
+	for(i=0;i<300;i++){
+		char *key=malloc(10);;
+		char *value=malloc(20);
 		fscanf(kvfile,"%5s",key);
 		fscanf(kvfile,"%10s",value);
+		//printf("write, i=%d\n",i);
 		put(key,value);
 	}
 	
-	struct KNODE *knode;
-	knode=active_table->key_head;
-	for(;knode!=NULL;knode=knode->next){
-		printf("key:%s value:%s\n",knode->key,knode->value);
-	}
+	printf("write end\n");
+	//printf("levels_summary=%d\n",*(int*)levels_summary);
 }

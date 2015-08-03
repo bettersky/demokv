@@ -1,11 +1,12 @@
 //flash.h
+#include<stdlib.h>
 #define PAGE_BYTES 1024  //1KB
 #define BLOCK_PAGES 4096 //4K pages a block
 #define BLOCK_BYTES 4194304 //4MB
 #define SEGMENT_BLOCKS 1 //1 block
 #define VERSION_BYTES 4
 
-#define test_seg_bytes 200
+#define test_seg_bytes 100 //actually seg_bytes should be the same with segment_bytes
 
 struct DEVICE{
 	unsigned char * mmap_begin;

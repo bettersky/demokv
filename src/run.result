@@ -1,0 +1,163 @@
+I am main
+I m test 
+I am flash_init,
+fd=3
+dev=0x51fd000
+____________ in flash_init,levels_summary=0x4027000
+i am write
+/////////////level 0: tables_num=0 ,levels_summary= 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, counter=1 
+
+---sorted_active_table------------------------------------------------------
+1: key=-, value=the,                        size=6
+2: key=event, value=which,                        size=18
+3: key=for:, value=UDEV,                        size=28
+4: key=monit, value=or,                        size=37
+5: key=the, value=received,                        size=50
+6: key=udev, value=sends,                        size=61
+7: key=will, value=print,                        size=72
+------------------------------------------------------sorted_active_table---
+
+lev0_info[0]=0
+lev0_info[1]=0
+lev0_info[2]=0
+lev0_info[3]=0
+lev0_info[4]=0
+lev0_info[5]=0
+base_entry=0
+crossed_num=0
+
+---big_crossed_table------------------------------------------------------
+------------------------------------------------------big_crossed_table---
+
+!!!!!split_big_table
+splitted_tables-1 =0, lev0_info[LEV0_NUM]=0, base_entry=0
+
+---big_table------------------------------------------------------
+1: key=-, value=the,                        size=6
+2: key=event, value=which,                        size=18
+3: key=for:, value=UDEV,                        size=28
+4: key=monit, value=or,                        size=37
+5: key=the, value=received,                        size=50
+6: key=udev, value=sends,                        size=61
+7: key=will, value=print,                        size=72
+------------------------------------------------------big_table---
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<I am merge1, end ,counter=1 
+merge end
+/////////////level 0: tables_num=1 ,levels_summary= 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, counter=2 
+
+---sorted_active_table------------------------------------------------------
+1: key=-, value=the,                        size=6
+2: key=2], value=add,                        size=13
+3: key=KERNE, value=L[22.08610,                        size=30
+4: key=kerne, value=l,                        size=38
+5: key=out, value=after,                        size=48
+6: key=rule, value=processing,                        size=64
+7: key=ueven, value=t,                        size=72
+------------------------------------------------------sorted_active_table---
+
+lev0_info[0]=1
+lev0_info[1]=0
+lev0_info[2]=0
+lev0_info[3]=0
+lev0_info[4]=0
+lev0_info[5]=1
+base_entry=0
+crossed_num=1
+
+---big_crossed_table------------------------------------------------------
+1: key=-, value=the,                        size=6
+2: key=event, value=which,                        size=18
+3: key=for:, value=UDEV,                        size=28
+4: key=monit, value=or,                        size=37
+5: key=the, value=received,                        size=50
+6: key=udev, value=sends,                        size=61
+7: key=will, value=print,                        size=72
+------------------------------------------------------big_crossed_table---
+
+!!!!!split_big_table
+splitted_tables-1 =1, lev0_info[LEV0_NUM]=1, base_entry=0
+
+---big_table------------------------------------------------------
+1: key=-, value=the,                        size=6
+2: key=2], value=add,                        size=13
+3: key=KERNE, value=L[22.08610,                        size=30
+4: key=event, value=which,                        size=42
+5: key=for:, value=UDEV,                        size=52
+6: key=kerne, value=l,                        size=60
+7: key=monit, value=or,                        size=69
+8: key=out, value=after,                        size=79
+9: key=rule, value=processing,                        size=95
+10: key=the, value=received,                        size=108
+11: key=udev, value=sends,                        size=119
+12: key=ueven, value=t,                        size=127
+13: key=will, value=print,                        size=138
+------------------------------------------------------big_table---
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<I am merge1, end ,counter=2 
+merge end
+/////////////level 0: tables_num=2 ,levels_summary= 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, counter=3 
+
+---sorted_active_table------------------------------------------------------
+1: key=/devi, value=ces/LNXSYS,                        size=17
+2: key=ACTIO, value=N=add,                        size=29
+3: key=DEVPA, value=TH=/device,                        size=46
+4: key=TM:00, value=(acpi),                        size=59
+5: key=s/LNX, value=SYSTM:00,                        size=74
+------------------------------------------------------sorted_active_table---
+
+lev0_info[0]=1
+lev0_info[1]=1
+lev0_info[2]=0
+lev0_info[3]=0
+lev0_info[4]=0
+lev0_info[5]=2
+base_entry=0
+crossed_num=2
+
+---big_crossed_table------------------------------------------------------
+1: key=-, value=the,                        size=6
+2: key=2], value=add,                        size=13
+3: key=KERNE, value=L[22.08610,                        size=30
+4: key=event, value=which,                        size=42
+5: key=for:, value=UDEV,                        size=52
+6: key=kerne, value=l,                        size=60
+7: key=monit, value=or,                        size=69
+8: key=out, value=after,                        size=79
+9: key=rule, value=processing,                        size=95
+10: key=the, value=received,                        size=108
+11: key=udev, value=sends,                        size=119
+12: key=ueven, value=t,                        size=127
+13: key=will, value=print,                        size=138
+------------------------------------------------------big_crossed_table---
+
+!!!!!split_big_table
+splitted_tables-1 =2, lev0_info[LEV0_NUM]=2, base_entry=0
+
+---big_table------------------------------------------------------
+1: key=-, value=the,                        size=6
+2: key=/devi, value=ces/LNXSYS,                        size=23
+3: key=2], value=add,                        size=30
+4: key=ACTIO, value=N=add,                        size=42
+5: key=DEVPA, value=TH=/device,                        size=59
+6: key=KERNE, value=L[22.08610,                        size=76
+7: key=TM:00, value=(acpi),                        size=89
+8: key=event, value=which,                        size=101
+9: key=for:, value=UDEV,                        size=111
+10: key=kerne, value=l,                        size=119
+11: key=monit, value=or,                        size=128
+12: key=out, value=after,                        size=138
+13: key=rule, value=processing,                        size=154
+14: key=s/LNX, value=SYSTM:00,                        size=169
+15: key=the, value=received,                        size=182
+16: key=udev, value=sends,                        size=193
+17: key=ueven, value=t,                        size=201
+18: key=will, value=print,                        size=212
+------------------------------------------------------big_table---
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<I am merge1, end ,counter=3 
+merge end
+/////////////level 0: tables_num=3 ,levels_summary= 

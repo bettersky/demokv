@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include "std.h"
 
 #include "main.h"
 #include "flash.h"
@@ -6,13 +6,14 @@
 
 struct LEV0 * lev0_head;
 
-char * lev0_tables[LEV0_NUM];
+char * lev0_tables[LEV0_NUM]={0};
 
 struct DEVICE device;
 
 struct ATABLE *active_table;
 
 char *table_finder_0;
+char *levels_summary;
 
 
 int test(){

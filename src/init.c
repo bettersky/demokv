@@ -1,6 +1,5 @@
 #include <fcntl.h>    //provides O_RDONLY etc.
-#include <stdlib.h>
-#include <stdio.h>
+#include "std.h"
 
 #include "main.h"
 #include "flash.h"
@@ -12,16 +11,21 @@
 extern struct DEVICE device;
 extern struct ATABLE *active_table;//defined in egtable.h
 extern char *table_finder_0;
+extern char *levels_summary;
+
 
 
 int read_disk(void *);
 int init_ftl();
 int init_memory();
+int init_ftl_sub(char *ftl_path, uint64_t ftl_size, char **ftl_name);
 
 int flash_init(void * args){
 	read_disk(args);
 	init_ftl();
+	printf("____________ in flash_init,levels_summary=%p\n",levels_summary);
 	init_memory();
+	//exit(10);
 	//if is formatted, call flash_open
 	//else first call flash_formate, then call flash_open
 	
@@ -40,43 +44,41 @@ int read_disk(void * args){
 		ioctl(fd, BLKGETSIZE64, &blk64);//reture the size in bytes . This result is real
 		ioctl(fd, BLKGETSIZE, &blk);//just /512 of the BLKGETSIZE64
 		
-	printf("physical block size=%llu, logical block size=%llu,block number in 64 bits=%llu,/512=%llu\n",blkpb,blklb,blk64,blk);
-		printf("page=%d B, block=%d MB, area=%d block\n",PAGE_BYTES,BLOCK_BYTES/1024/1024,SEGMENT_BLOCKS);
+	//printf("physical block size=%llu, logical block size=%llu,block number in 64 bits=%llu,/512=%llu\n",blkpb,blklb,blk64,blk);
+		//printf("page=%d B, block=%d MB, area=%d block\n",PAGE_BYTES,BLOCK_BYTES/1024/1024,SEGMENT_BLOCKS);
 		uint64_t pages_total=blk64/PAGE_BYTES;
 		
 	uint64_t bytes_offset=0;
-	unsigned char*	dev=(unsigned char*)mmap(NULL,blk64,PROT_WRITE,MAP_SHARED,fd,bytes_offset);
+	char*	dev=(char*)mmap(NULL,BLOCK_BYTES,PROT_WRITE,MAP_SHARED,fd,bytes_offset);
 	
 	printf("dev=%p\n",dev);
-	*dev='g';
+	//*dev='g';
 	device.mmap_begin=dev;
 	device.segment_bytes=test_seg_bytes;//SEGMENT_BLOCKS*BLOCK_BYTES;
-	printf("device.mmap_begin=%p\n",device.mmap_begin);
+	//printf("device.mmap_begin=%p\n",device.mmap_begin);
 
 
 }
 
 int init_ftl(){
-	printf("i am init_ftl\n");
-	FILE *map_table=fopen("../ftl/map_table","r+");
-	FILE *log_pointer=fopen("../ftl/log_pointer","r+");
-	int fd_table_finder_0=open("../ftl/table_finder_0",O_RDWR);
-	int res=lseek(fd_table_finder_0,PAGE_BYTES-1,SEEK_SET);
-	write(fd_table_finder_0,"\0",1);
-	table_finder_0=(char *)mmap(NULL, PAGE_BYTES ,PROT_WRITE,MAP_SHARED,fd_table_finder_0,0);
-	memset(table_finder_0, 0, PAGE_BYTES);
-	printf("map_table=%p, log_pointer=%p, table_finder_0=%p\n",map_table,log_pointer,table_finder_0);
+	//printf("i am init_ftl\n");
 	uint64_t i;
+	//init the table_finder_0 --begin
+	init_ftl_sub("../ftl/table_finder_0", PAGE_BYTES,&table_finder_0);
+	//init the table_finder_0 --end
+	//printf("map_table=%p, log_pointer=%p, table_finder_0=%p\n",map_table,log_pointer,table_finder_0);
+	
+	//init the levels_summary --begin
+	init_ftl_sub("../ftl/levels_summary", PAGE_BYTES*8,&levels_summary);
+	
+	//init the levels_summary --end
+	
 	for(i=0;i<100;i++){
 		//fprintf(map_table,"%019d\n",i);
 	}
-	printf("ftell returns:%d\n",ftell(map_table));
-	i=2;
-	fseek(map_table,i*20,SEEK_SET);
-	printf("ftell returns:%d\n",ftell(map_table));
-	uint64_t phy;
-	fscanf(map_table,"%llu",&phy);
-	printf("phy:%d\n",phy);
+	//printf("ftell returns:%d\n",ftell(map_table));
+	
+	//printf("phy:%d\n",phy);
 	
 	 /*
 	for(i=0;i<LEV0_NUM+1;i++){
@@ -89,6 +91,15 @@ int init_ftl(){
 
 int init_memory(){
 	active_table=malloc(sizeof(struct ATABLE));
-	
+	memset(active_table, 0, sizeof(struct ATABLE));
+}
+
+int init_ftl_sub(char *ftl_file_path, uint64_t ftl_size, char **ftl_name){
+	int fd=open(ftl_file_path , O_RDWR);
+	int res=lseek(fd,ftl_size-1,SEEK_SET);
+	write(fd,"\0",1);
+	*ftl_name=(char *)mmap(NULL, ftl_size ,PROT_WRITE,MAP_SHARED,fd,0);
+	memset(*ftl_name, 0, ftl_size);
+	close(fd);
 
 }
