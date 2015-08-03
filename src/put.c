@@ -9,6 +9,10 @@ int put(char* key,char* value){
 	//printf("I am put\n");
 	int key_size=strlen(key);
 	int value_size=strlen(value);
+	if(key_size==0) {
+		printf("!!!!KEY is blank. In put\n");
+		exit(1);	
+	}
 	//printf("key=%s, key size=%d,value=%s,value size=%d\n",key,key_size,value, value_size);
 	//decide whether need to merge --begin
 	if(active_table->kv_bytes +key_size+value_size +2 +TABLE_END_RESERVED > device.segment_bytes){//merge to lev0

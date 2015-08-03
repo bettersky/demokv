@@ -1,0 +1,21 @@
+当segment配置为792以上的时候，就会出现
+	*** Error in `./main': double free or corruption (!prev): 0x00000000024ade80 ***
+	Aborted (core dumped)
+错误
+
+此时lev0还未满
+
+而当配置为791以下的时候，不管lev0满没满都不会出问题
+
+根据valgrind的提示，问题出在
+	
+	当segment设置为2000的时候
+	fill_big_table中
+	while(*advancer!=0){//caculate the i-th table size
+	这一句当i执行到2时会出现advancer无法读取，一读就出错
+	
+	当设置为792时，
+	在print_table中
+		if(*test==0) break;
+		出错，仍然是读取错误。
+		这表明tables_point[4]有问题，该打印是发生在merge2函数中的，正常应该是没问题的

@@ -31,7 +31,7 @@ int kv_write(){
 	*/
 	FILE *kvfile=fopen("../udev","r");
 	uint64_t i;
-	for(i=0;i<300;i++){
+	for(i=0;i<3000;i++){
 		char *key=malloc(10);;
 		char *value=malloc(20);
 		fscanf(kvfile,"%5s",key);

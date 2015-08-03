@@ -6,7 +6,7 @@
 
 struct LEV0 * lev0_head;
 
-char * lev0_tables[LEV0_NUM]={0};
+char * lev0_tables[LEV0_NUM];
 
 struct DEVICE device;
 

@@ -23,17 +23,15 @@ int merge(){
 			uint32_t tables_num ;
 			tables_num=*(uint32_t*)(levels_summary +i*LEVELS_SUMMARY_ENTRY);
 			//fscanf(levels_summary, "%d", &tables_num);
-			printf("/////////////level %d: tables_num=%X ,levels_summary=%s \n",i,tables_num,levels_summary+i*LEVELS_SUMMARY_ENTRY);
+			printf("/////////////level %d: tables_num=%X ,levels_summary+i*LEVELS_SUMMARY_ENTRY=%p \n",i,tables_num,levels_summary+i*LEVELS_SUMMARY_ENTRY);
 			
 			if(tables_num < LEV0_NUM* (i+1) ){//here i+1 should be replaced by pow(10, i)
 				break;//break the for
 			}
 		}
 		if(i==0){//lev 0 is not full
-			int static merge1_counter=1;
-			//go to step 1
-			//printf("___________merge1_counter=%d\n",merge1_counter++);
 			
+			//go to step 1
 			merge1();
 			break;//break the while
 			//printf("XXXXXXXXXXXXXXXXXXXXXX\n");
@@ -41,8 +39,8 @@ int merge(){
 		else{
 			//go to step b
 			//selected level is i-1, because level i is not full
-			printf("comes to merge2, i=%d\n",i);
-			exit(1);
+			//printf("comes to merge2, i=%d\n",i);
+			
 			merge2();
 		}
 	}
@@ -63,8 +61,3 @@ int merge(){
 
 }
 
-int merge2(){
-	printf("levels_summary=%p\n",levels_summary);
-	*levels_summary ='V';
-	exit(1);
-}

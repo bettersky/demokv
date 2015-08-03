@@ -69,7 +69,7 @@ int init_ftl(){
 	//printf("map_table=%p, log_pointer=%p, table_finder_0=%p\n",map_table,log_pointer,table_finder_0);
 	
 	//init the levels_summary --begin
-	init_ftl_sub("../ftl/levels_summary", PAGE_BYTES*8,&levels_summary);
+	init_ftl_sub("../ftl/levels_summary", PAGE_BYTES*4,&levels_summary);
 	
 	//init the levels_summary --end
 	

@@ -1,6 +1,10 @@
 //segtable.h
+#ifndef HEADER_SEGTABLE
+#define HEADER_SEGTABLE
+
 #include "std.h"
 #include <string.h>
+
 
 
 #define LEV0_NUM 5
@@ -45,3 +49,5 @@ struct LEV0{
 
 
 };
+
+#endif
