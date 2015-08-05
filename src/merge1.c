@@ -32,18 +32,21 @@ int merge1(){
 	
 	memset(sorted_active_table,0, test_seg_bytes);;
 	int lev0_info[LEV0_NUM+1]={0};//the last is total crossed number 
-	
+	for(i=0;i<LEV0_NUM+1;i++){
+		//printf("lev0_info%d=%d\n",i,lev0_info[i]);
+	}
+	//printf("lev0 num=%d\n",*(uint32_t*)(levels_summary ));
 	fill_sorted_active_table(sorted_active_table,lev0_info);//this will alse find crossed tables
 	
 	//print_table("sorted_active_table",sorted_active_table);
 	
 	for(i=0;i<LEV0_NUM+1;i++){
-		printf("lev0_info[%d]=%d\n",i,lev0_info[i]);
+		printf("lev0_info%d=%d\n",i,lev0_info[i]);
 	}
 	
 	int base_entry=set_base_entry(lev0_info);
 	int crossed_num=lev0_info[LEV0_NUM];
-	printf("base_entry=%d\n", base_entry);
+	//printf("base_entry=%d\n", base_entry);
 	
 	char *big_table=(char*)malloc( (crossed_num+1)* test_seg_bytes );
 	memset(big_table, 0 , (crossed_num+1)* test_seg_bytes);
@@ -141,7 +144,7 @@ int fill_sorted_active_table(char *sorted_active_table ,int *lev0_info){
 			//free big table
 	}
 	free(active_table_old);
-
+	
 	fill_lev0_info(lev0_info, active_first_key, active_last_key );
 	
 }
@@ -160,6 +163,7 @@ int fill_lev0_info(int *lev0_info, char *active_first_key, char *active_last_key
 			memcpy(find_last_key, ( table_finder_0 + (FINDER_ENTRY_LENGTH)*(i) + FINDER_KEY_LENGTH ), FINDER_KEY_LENGTH );
 			if(strcmp(active_last_key, find_first_key)<0 ){//no following crossings
 				lev0_info[i]=3;
+				if(lev0_info[LEV0_NUM]==0)  lev0_info[LEV0_NUM]=-1;//this will set crossed num to -1
 				break;
 			}
 			if( strcmp(active_first_key, find_last_key) >0){//doesn't cross	, but fowllings may be crossed
@@ -187,7 +191,8 @@ int set_base_entry(int *lev0_info){
 	
 	int i;
 	for(i=0;i<LEV0_NUM;i++){
-		if( lev0_info[i]==1 || lev0_info[i]==0) return i;
+		if( lev0_info[i]==1 || lev0_info[i]==0 ||  lev0_info[i]==3) return i;
+		
 		
 	}
 
@@ -202,6 +207,10 @@ int set_base_entry(int *lev0_info){
 int fill_big_table(char *big_table, char *sorted_active_table, int *lev0_info ){
 int i;
 	int crossed_num=lev0_info[LEV0_NUM];
+	if(crossed_num<=0){//directly trans
+		memcpy(big_table, sorted_active_table, test_seg_bytes);
+		return 1;
+	}
 	char *union_crossed_tables=malloc( (crossed_num)* test_seg_bytes +1 );//+1 is for the case crossed_num=0;
 	memset(union_crossed_tables, 0, (crossed_num)* test_seg_bytes +1);
 	char *crossed_tables[lev0_info[LEV0_NUM]];//this will point to the crossed tables
@@ -223,7 +232,7 @@ int i;
 			
 			char *advancer=crossed_tables[i];//every cycle this points to a next crossed table
 			uint32_t copy_size=0;
-			printf("debug1, i=%d, advancer=%p\n",i,advancer);
+			//printf("debug1, i=%d, advancer=%p\n",i,advancer);
 			
 			while(*advancer!=0){//caculate the i-th table size
 				int kv_len=strlen(advancer)+1 + strlen(advancer+ strlen(advancer)+1 ) +1;
@@ -314,7 +323,7 @@ int i;
 int crossed_num=lev0_info[LEV0_NUM];
 	char *big_table_advancer=big_table;
 	int splitting_counter=0;
-	char *splitted_tables_pointer[crossed_num];
+	char *splitted_tables_pointer[crossed_num + 2]; //crossed_num can be -1, but an array's size should be at lesast 1
 	int splitted_tables_num=0;
 	
 	char *manua_splitted_first_key[LEV0_NUM];
@@ -322,7 +331,7 @@ int crossed_num=lev0_info[LEV0_NUM];
 	char *manua_splitted_last_key[LEV0_NUM];
 	char *start_pointer=big_table_advancer;//records the start point when splitting table
 	char *p0,*p1;//for recording two 
-printf("!!!!!split_big_table\n");	
+
 	int base_entry=set_base_entry(lev0_info);
 	while(1){//every cycle advance a KV
 		if(*big_table_advancer==0){//advance to the end, finish
@@ -369,37 +378,93 @@ printf("!!!!!split_big_table\n");
 		//crossed by one, then make the lev0_tables[] from basse_entry point tot the splitted tables
 	//and notice: before change the lev0_tables[] pointer, first free it 
 	//and notice: every time the lev0_tables[] pointer are changed, the table_finder_0 should be updated
+	//!!NOTIVE: there is a case that the splitted_tables_num is less than the crossed num!!!
+		//in such case, a advert oprations should be done
 	//update lev0_tables[] --begin
-	for(i=0;i<crossed_num;i++){		
+	for(i=0;i<crossed_num;i++){		//invalid the crossed tables' ponter
 			free(lev0_tables[base_entry+i]);
+			lev0_tables[base_entry+i]=NULL;
 	}
-	if(crossed_num==0|| splitted_tables_num==crossed_num){//direnctly point
-		for(i=0;i<splitted_tables_num;i++){		
-			
+	
+	if(crossed_num==-1){//no crossing but need move
+		for(i=LEV0_NUM-1;i>=base_entry+1;i--){//move forward by 1
+			lev0_tables[i]=lev0_tables[i-1];
+		}
+		//update moved entryies --begin
+		memmove(table_finder_0+ FINDER_ENTRY_LENGTH*(base_entry+1), table_finder_0+ FINDER_ENTRY_LENGTH*(base_entry), FINDER_ENTRY_LENGTH*(LEV0_NUM-(base_entry+1)));
+		//update moved entries  --end
+		for(i=0;i<splitted_tables_num;i++){				
+			lev0_tables[base_entry+i]=splitted_tables_pointer[i];
+		}
+		
+		//update levels_summary --begin		
+		( *(int*) levels_summary)++;		
+		//update levels_summary --end
+	}
+	else if(crossed_num==0 ){//no crossed tables, and need not move  
+		for(i=0;i<splitted_tables_num;i++){				
+			lev0_tables[base_entry+i]=splitted_tables_pointer[i];
+		}
+		
+		//update levels_summary --begin		
+		( *(int*) levels_summary)++;		
+		//update levels_summary --end
+	}
+	else if(splitted_tables_num==crossed_num){//directly change pointer
+		for(i=0;i<splitted_tables_num;i++){				
 			lev0_tables[base_entry+i]=splitted_tables_pointer[i];
 		}
 	}
-	else{
-		for(i=LEV0_NUM-1;i>=base_entry+crossed_num;i--){//move
+	else if(splitted_tables_num>crossed_num){ //bigger than 1
+	//printf("!!splitted_tables_num > crossed_num,begin, ( *(int*) levels_summary)=%d\n",( *(int*) levels_summary) );
+		int mov_num=splitted_tables_num-crossed_num;// usually this is 1
+		for(i=LEV0_NUM-1;i>=base_entry+crossed_num;i--){//move forward by 1
 			lev0_tables[i]=lev0_tables[i-1];
 		}
+		//update moved entryies --begin
 		memmove(table_finder_0+ FINDER_ENTRY_LENGTH*(base_entry+crossed_num+1), table_finder_0+ FINDER_ENTRY_LENGTH*(base_entry+crossed_num), FINDER_ENTRY_LENGTH*(LEV0_NUM-(base_entry+crossed_num+1)));
+		//update moved entries  --end
 		for(i=0;i<splitted_tables_num;i++){					
 			lev0_tables[base_entry+i]=splitted_tables_pointer[i];
 		}
+		
+		//update levels_summary --begin		
+		( *(int*) levels_summary)++;		
+		//update levels_summary --end
+	//printf("!!splitted_tables_num > crossed_num, mov_num=%d\n",mov_num);
+	}
+	else if(splitted_tables_num < crossed_num){ //less than 1
+		
+		//printf("!!splitted_tables_num < crossed_num,begin, ( *(int*) levels_summary)=%d\n",( *(int*) levels_summary) );
+		//move back --begin
+		int mov_num=crossed_num-splitted_tables_num;// usually this is 1
+		
+		for(i=base_entry+crossed_num; i<LEV0_NUM;i++){//move pointer
+			lev0_tables[i-mov_num]=lev0_tables[i];
+		}
+		
+		//update moved entryies --begin
+		memmove( table_finder_0+FINDER_ENTRY_LENGTH*( (base_entry+crossed_num) -mov_num), table_finder_0+FINDER_ENTRY_LENGTH*(base_entry+crossed_num), FINDER_ENTRY_LENGTH*(LEV0_NUM- (base_entry+crossed_num)) );
+		//update moved entryies --end
+		//move back --end
+		
+		for(i=0;i<splitted_tables_num;i++){					
+			lev0_tables[base_entry+i]=splitted_tables_pointer[i];
+		}
+		//update levels_summary --begin		
+		( *(int*) levels_summary) -=mov_num;		
+		//update levels_summary --end
+		printf("!!splitted_tables_num < crossed_num, mov_num=%d,( *(int*) levels_summary)=%d \n",mov_num, ( *(int*) levels_summary));
+		//exit(1);
 	}
 	//update lev0_tables[] --end
 
-	//update levels_summary --begin
-		if(splitted_tables_num> crossed_num){
-			( *(int*) levels_summary)++;
-		}
-	//update levels_summary --end
+	
 	
 	//update the entries --begin
 		//the moving action has been done in updating the lev0_tables[]
-		for(i=0;i<splitted_tables_num;i++){
-			memset(table_finder_0+ FINDER_ENTRY_LENGTH*(base_entry+i), 0 , FINDER_KEY_LENGTH*2);//clear old data
+		memset(table_finder_0+ FINDER_ENTRY_LENGTH*(base_entry), 0 , FINDER_KEY_LENGTH*2*splitted_tables_num);//clear old data
+		for(i=0;i<splitted_tables_num;i++){			
 			memcpy(table_finder_0+ FINDER_ENTRY_LENGTH*(base_entry+i), manua_splitted_first_key[i], strlen(manua_splitted_first_key[i]) );
 			memcpy(table_finder_0+ FINDER_ENTRY_LENGTH*(base_entry+i)+FINDER_KEY_LENGTH, manua_splitted_last_key[i], strlen(manua_splitted_last_key[i]) );
 		}
@@ -407,6 +472,6 @@ printf("!!!!!split_big_table\n");
 
 		free(big_table);
 		
-		printf("split finished, splitted_tables_num=%d, crossed=%d\n",splitted_tables_num, crossed_num);
+		printf("split finished, splitted_tables_num=%d, crossed=%d, ( *(int*) levels_summary)=%d\n",splitted_tables_num, crossed_num,( *(int*) levels_summary));
 
 }

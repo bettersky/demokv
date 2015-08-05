@@ -6,7 +6,7 @@
 #define SEGMENT_BLOCKS 1 //1 block
 #define VERSION_BYTES 4
 
-#define test_seg_bytes 792 //actually seg_bytes should be the same with segment_bytes
+#define test_seg_bytes 1048576 //actually seg_bytes should be the same with segment_bytes
 
 struct DEVICE{
 	unsigned char * mmap_begin;

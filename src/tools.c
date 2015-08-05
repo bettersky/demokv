@@ -36,3 +36,4 @@ void print_atable(char *str, struct ATABLE *table){
 	printf("------------------------------------------------------%s---\n\n",str);
 
 }
+

@@ -13,6 +13,7 @@ extern char *levels_summary;
 
 int merge2(){
 	printf("I am merge 2, levels_summary=%p\n",levels_summary);
+	
 	int i;
 	for(i=0;i<LEV0_NUM;i++){
 		printf("lev0_tbales[%d]=%p\n",i, lev0_tables[i]);

@@ -29,13 +29,21 @@ int kv_write(){
 	*(key+i)='\0';
 	printf("key=%s\n",key);
 	*/
-	FILE *kvfile=fopen("../udev","r");
+	FILE *kvfile=fopen("../web.spc","r");
 	uint64_t i;
-	for(i=0;i<3000;i++){
+	for(i=0;;i++){
 		char *key=malloc(10);;
 		char *value=malloc(20);
-		fscanf(kvfile,"%5s",key);
-		fscanf(kvfile,"%10s",value);
+		int res=fscanf(kvfile,"%5s",key);
+		if(res==EOF){
+			printf("test KV file read to end when get key\n");
+			exit(1);
+		}
+		res=fscanf(kvfile,"%10s",value);
+		if(res==EOF){
+			printf("test KV file read to end when get value\n");
+			exit(1);
+		}
 		//printf("write, i=%d\n",i);
 		put(key,value);
 	}
