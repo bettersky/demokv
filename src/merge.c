@@ -23,9 +23,13 @@ int merge(){
 			uint32_t tables_num ;
 			tables_num=*(uint32_t*)(levels_summary +i*LEVELS_SUMMARY_ENTRY);
 			//fscanf(levels_summary, "%d", &tables_num);
-			printf("/////////////level %d: tables_num=%X ,levels_summary+i*LEVELS_SUMMARY_ENTRY=%p \n",i,tables_num,levels_summary+i*LEVELS_SUMMARY_ENTRY);
-			
-			if(tables_num < LEV0_NUM* (i+1) ){//here i+1 should be replaced by pow(10, i)
+			printf("/////////////level %d: tables_num=%d ,levels_summary+i*LEVELS_SUMMARY_ENTRY=%p \n",i,tables_num,levels_summary+i*LEVELS_SUMMARY_ENTRY);
+			if(i==0){
+				if(tables_num < LEV0_NUM ){
+					break;//break the for
+				}
+			}
+			else if( tables_num < simple_pow(LEV_PUFFER, i) ){//here i+1 should be replaced by pow(10, i)
 				break;//break the for
 			}
 		}
@@ -41,7 +45,7 @@ int merge(){
 			//selected level is i-1, because level i is not full
 			//printf("comes to merge2, i=%d\n",i);
 			
-			merge2();
+			merge2(i-1);
 		}
 	}
 		//step b: select a table from the higher level, the hightest could be level 0, then merge it to this not full level

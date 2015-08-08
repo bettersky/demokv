@@ -6,28 +6,29 @@
 #include <string.h>
 
 
-
+//lev 0 
 #define LEV0_NUM 5
 #define MAX_LEV 7
-#define LEVELS_SUMMARY_ENTRY 100
+#define LEVELS_SUMMARY_ENTRY 128
 
 #define TABLE_END_RESERVED 20
 #define TABLE_END_ZERO 4
 #define TABLE_END_KV_BYTES 4
 #define TABLE_END_KV_NUM 4
 
-#define FINDER_KEY_LENGTH 20
+#define FINDER_KEY_LENGTH 32
 #define FINDRE_NUMBER_LENGTH 10
-#define FINDER_ENTRY_LENGTH 40
-#define SERIAL_BASE 0
+#define FINDER_ENTRY_LENGTH 64
 
-#define KV_LENGTH 64
-
+#define SERIAL_BASE 0 //beginning of serial number
+//lev 0
+//#define KV_LENGTH 64
+#define LEV_PUFFER 10
 int put(char* key,char* value);
 int merge();
 
 int merge1();
-int merge2();
+int merge2(int);
 
 struct KNODE{
 	char * key;
@@ -48,6 +49,16 @@ struct LEV0{
 	char *next;
 
 
+};
+
+struct FINDER_ENTRY{
+	char first_key[FINDER_KEY_LENGTH];
+	char last_key[FINDER_KEY_LENGTH];
+	uint64_t serial_num;
+	
+	struct FINDER_ENTRY *next;
+	struct FINDER_ENTRY *pre;
+	
 };
 
 #endif

@@ -1,0 +1,3 @@
+在give_tip_table函数中，
+
+前面的编码未考虑当full_lev大于0的情况，导致lev1合并到lev2时出错

@@ -9,6 +9,8 @@ void print_table(char *str, char *table);
 
 void print_atable(char *str, struct ATABLE *table);
 
+uint64_t simple_pow(int base , int exp); 
 
+void print_bit_map(char *,char * bit_map,int size);
 
 #endif

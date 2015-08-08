@@ -10,6 +10,7 @@ extern char *levels_summary;
 
 extern struct DEVICE device;
 extern struct ATABLE *active_table;//defined in egtable.h //for test
+extern char *lev0_tables[];
 
 int kv_write(){
 	printf("i am write\n");	
@@ -29,25 +30,32 @@ int kv_write(){
 	*(key+i)='\0';
 	printf("key=%s\n",key);
 	*/
-	FILE *kvfile=fopen("../web.spc","r");
+	FILE *kvfile=fopen("../fire","r");
 	uint64_t i;
+	int end=0;
 	for(i=0;;i++){
 		char *key=malloc(10);;
 		char *value=malloc(20);
 		int res=fscanf(kvfile,"%5s",key);
-		if(res==EOF){
-			printf("test KV file read to end when get key\n");
-			exit(1);
+		
+		if(feof(kvfile)){
+			end=1;
+			break;
 		}
 		res=fscanf(kvfile,"%10s",value);
-		if(res==EOF){
-			printf("test KV file read to end when get value\n");
-			exit(1);
+		if(feof(kvfile)){
+			
+			end=2;
+			break;
 		}
 		//printf("write, i=%d\n",i);
 		put(key,value);
 	}
 	
-	printf("write end\n");
+	//int lev0_nums=0;
+	
+	if(end==1) printf(" KV file read to end when get key\n"); 
+	if(end==2) printf(" KV file read to end when get value\n"); 
+	//printf("write end, lev0_nums=%d\n",lev0_nums);
 	//printf("levels_summary=%d\n",*(int*)levels_summary);
 }

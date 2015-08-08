@@ -9,7 +9,11 @@ void print_table(char* str,char *table){
 	int i=0;
 	int size=0;
 	printf("\n---%s------------------------------------------------------\n",str);
-	while(1){//print test			
+	while(1){//print test	
+			if(test==NULL){
+				printf("NULL\n");
+				break;
+			}
 			if(*test==0) break;
 				printf("%d: key=%s, ", ++i, test);
 				size+=strlen(test)+1;
@@ -37,3 +41,31 @@ void print_atable(char *str, struct ATABLE *table){
 
 }
 
+
+uint64_t simple_pow(int base , int exp){
+	int i;
+	
+	uint64_t res=1;
+	for(i=0;i<exp;i++){
+		res*=base;
+		
+	}
+	
+	return res;
+
+}
+
+
+
+void print_bit_map(char *str, char *bit_map, int size){
+	printf("\n---%s------------------------------------------------------\n",str);
+	
+	int i;
+	for(i=0;i<size;i++){//print test					s
+				printf("%d ",bit_map[i]);
+				
+	}
+	printf("\n");
+	printf("------------------------------------------------------%s---\n\n",str);
+	
+}

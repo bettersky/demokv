@@ -1,0 +1,11 @@
+在split_big_table2函数中，
+
+声明
+	char *manua_splitted_first_key[crossed_num+2]; //LEV0_NUM
+	manua_splitted_first_key[0]=big_table_advancer;
+	char *manua_splitted_last_key[crossed_num+2];
+中沿用了merge1中的，将数组大小用LEV0_NUM定义
+
+然而表分割后数量大于LEV0_NUM导致栈溢出错误。
+
+其实在merge1中这样定义也是错的，数组大小应该根据crossed_num来定义

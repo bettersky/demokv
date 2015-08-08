@@ -48,8 +48,8 @@ int merge1(){
 	int crossed_num=lev0_info[LEV0_NUM];
 	//printf("base_entry=%d\n", base_entry);
 	
-	char *big_table=(char*)malloc( (crossed_num+1)* test_seg_bytes );
-	memset(big_table, 0 , (crossed_num+1)* test_seg_bytes);
+	char *big_table=(char*)malloc( (crossed_num+2)* test_seg_bytes );//crossed_num may be -1
+	memset(big_table, 0 , (crossed_num+2)* test_seg_bytes);
 	
 	fill_big_table(big_table, sorted_active_table, lev0_info );
 	
@@ -211,8 +211,8 @@ int i;
 		memcpy(big_table, sorted_active_table, test_seg_bytes);
 		return 1;
 	}
-	char *union_crossed_tables=malloc( (crossed_num)* test_seg_bytes +1 );//+1 is for the case crossed_num=0;
-	memset(union_crossed_tables, 0, (crossed_num)* test_seg_bytes +1);
+	char *union_crossed_tables=malloc( (crossed_num<0?0:crossed_num)* test_seg_bytes +1 );//+1 is for the case crossed_num=0; but crossed num may be -1
+	memset(union_crossed_tables, 0, (crossed_num<0?0:crossed_num)* test_seg_bytes +1);
 	char *crossed_tables[lev0_info[LEV0_NUM]];//this will point to the crossed tables
 	
 	char *union_advancer=union_crossed_tables;//anvances the cross union
@@ -227,7 +227,7 @@ int i;
 		
 	printf("crossed_num=%d, j=%d\n",crossed_num,j);
 	//j equals crossed_num
-	for(i=0;i<j;i++){//copy the crossed tables to union_crossed_tables
+	for(i=0;i<crossed_num;i++){//copy the crossed tables to union_crossed_tables
 			//uint32_t copy_size=*(uint32_t *) (crossed_tables[i] + test_seg_bytes - TABLE_END_RESERVED + TABLE_END_ZERO);
 			
 			char *advancer=crossed_tables[i];//every cycle this points to a next crossed table
@@ -326,9 +326,9 @@ int crossed_num=lev0_info[LEV0_NUM];
 	char *splitted_tables_pointer[crossed_num + 2]; //crossed_num can be -1, but an array's size should be at lesast 1
 	int splitted_tables_num=0;
 	
-	char *manua_splitted_first_key[LEV0_NUM];
+	char *manua_splitted_first_key[crossed_num+2];//LEV0_NUM
 	manua_splitted_first_key[0]=big_table_advancer;
-	char *manua_splitted_last_key[LEV0_NUM];
+	char *manua_splitted_last_key[crossed_num+2];
 	char *start_pointer=big_table_advancer;//records the start point when splitting table
 	char *p0,*p1;//for recording two 
 
@@ -347,11 +347,6 @@ int crossed_num=lev0_info[LEV0_NUM];
 		
 		if( splitting_counter + len_key + len_value + TABLE_END_RESERVED > test_seg_bytes){//splitting
 			
-			//lev0_tables[base_entry+splitted_tables_num]=malloc(0);//for freeing
-			//free(lev0_tables[base_entry+splitted_tables_num]);
-			//lev0_tables[base_entry+splitted_tables_num]=(char *)malloc(test_seg_bytes);
-			//memset(lev0_tables[base_entry+splitted_tables_num],0 , test_seg_bytes);
-			//memcpy( lev0_tables[base_entry+splitted_tables_num], start_pointer, p1-start_pointer);
 			splitted_tables_pointer[splitted_tables_num]=(char *)malloc(test_seg_bytes);
 			memset(splitted_tables_pointer[splitted_tables_num],0 , test_seg_bytes);			
 			memcpy(splitted_tables_pointer[splitted_tables_num], start_pointer, p1-start_pointer);
@@ -372,6 +367,8 @@ int crossed_num=lev0_info[LEV0_NUM];
 	memset(splitted_tables_pointer[splitted_tables_num],0 , test_seg_bytes);
 	memcpy(splitted_tables_pointer[splitted_tables_num], start_pointer, big_table_advancer-start_pointer);
 	splitted_tables_num++;//make it the ture num of splitted tables
+	
+	
 	//now if crossed table number is 0, directly make the lev0_tables[] from base_entry point to the splitted tables
 	//else if splitted table number is equal to the crossed table number, also can directly change lev0_tables pointer
 	//else the splitted table number must be bigger by 1 than crossed number, so we first move the pointer of the lev0_tables after the 
@@ -465,8 +462,10 @@ int crossed_num=lev0_info[LEV0_NUM];
 		//the moving action has been done in updating the lev0_tables[]
 		memset(table_finder_0+ FINDER_ENTRY_LENGTH*(base_entry), 0 , FINDER_KEY_LENGTH*2*splitted_tables_num);//clear old data
 		for(i=0;i<splitted_tables_num;i++){			
-			memcpy(table_finder_0+ FINDER_ENTRY_LENGTH*(base_entry+i), manua_splitted_first_key[i], strlen(manua_splitted_first_key[i]) );
-			memcpy(table_finder_0+ FINDER_ENTRY_LENGTH*(base_entry+i)+FINDER_KEY_LENGTH, manua_splitted_last_key[i], strlen(manua_splitted_last_key[i]) );
+			memcpy(table_finder_0+ FINDER_ENTRY_LENGTH*(base_entry+i), manua_splitted_first_key[i], 
+				strlen(manua_splitted_first_key[i])>FINDER_KEY_LENGTH-1?FINDER_KEY_LENGTH-1:strlen(manua_splitted_first_key[i]) );
+			memcpy(table_finder_0+ FINDER_ENTRY_LENGTH*(base_entry+i)+FINDER_KEY_LENGTH, manua_splitted_last_key[i], 
+				strlen(manua_splitted_last_key[i])>FINDER_KEY_LENGTH-1?FINDER_KEY_LENGTH-1 :strlen(manua_splitted_last_key[i]) );
 		}
 	//update the entries --end
 

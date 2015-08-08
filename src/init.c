@@ -1,35 +1,57 @@
 #include <fcntl.h>    //provides O_RDONLY etc.
 #include "std.h"
+#include <math.h>
 
 #include "main.h"
 #include "flash.h"
 #include "segtable.h"
 #include <linux/fs.h>   //provides BLKGETSIZE
 #include <sys/ioctl.h>  //provides ioctl()
- #include <sys/mman.h> //mmap
+#include <sys/mman.h> //mmap
+
+#include "tools.h"
 
 extern struct DEVICE device;
 extern struct ATABLE *active_table;//defined in egtable.h
 extern char *table_finder_0;
 extern char *levels_summary;
 
+extern uint64_t serials_base[]; //all levels' base serial number. 0 is reserved
+extern uint64_t serials_width[];// all levels' serial width. decided by the LEV)_NUM and LEV_PUFFER
+extern char *seg_bit_maps[];
 
+extern struct FINDER_ENTRY *tip_tables_entry[]; //pointers of the last tables of every level if the level is full. 0 is reserved to lev 0
+													//NULL indicates the level is not full
+extern struct FINDER_ENTRY *first_tables_entry[];
 
 int read_disk(void *);
 int init_ftl();
 int init_memory();
 int init_ftl_sub(char *ftl_path, uint64_t ftl_size, char **ftl_name);
 
+int init_serial();
+int init_seg_bit_maps();
+
+int init_tables_entry();
+
+
 int flash_init(void * args){
 	read_disk(args);
 	init_ftl();
 	printf("____________ in flash_init,levels_summary=%p\n",levels_summary);
-	init_memory();
+	init_memory();//allocate active table. 
+	
+	init_serial();
+	init_seg_bit_maps();
+	init_tables_entry();
 	//exit(10);
 	//if is formatted, call flash_open
 	//else first call flash_formate, then call flash_open
 	
 }
+
+
+
 int read_disk(void * args){
 	printf("I am flash_init,\n");
 	char *device_name=(char *) args;  
@@ -49,16 +71,20 @@ int read_disk(void * args){
 		uint64_t pages_total=blk64/PAGE_BYTES;
 		
 	uint64_t bytes_offset=0;
-	char*	dev=(char*)mmap(NULL,BLOCK_BYTES,PROT_WRITE,MAP_SHARED,fd,bytes_offset);
+	char*	dev=(char*)mmap(NULL,blk64,PROT_WRITE,MAP_SHARED,fd,bytes_offset);
 	
 	printf("dev=%p\n",dev);
 	//*dev='g';
 	device.mmap_begin=dev;
 	device.segment_bytes=test_seg_bytes;//SEGMENT_BLOCKS*BLOCK_BYTES;
+	device.segment_total=blk64/device.segment_bytes;
 	//printf("device.mmap_begin=%p\n",device.mmap_begin);
 
 
 }
+
+
+
 
 int init_ftl(){
 	//printf("i am init_ftl\n");
@@ -89,10 +115,16 @@ int init_ftl(){
 
 }
 
+
+
+
 int init_memory(){
 	active_table=malloc(sizeof(struct ATABLE));
 	memset(active_table, 0, sizeof(struct ATABLE));
 }
+
+
+
 
 int init_ftl_sub(char *ftl_file_path, uint64_t ftl_size, char **ftl_name){
 	int fd=open(ftl_file_path , O_RDWR);
@@ -101,5 +133,47 @@ int init_ftl_sub(char *ftl_file_path, uint64_t ftl_size, char **ftl_name){
 	*ftl_name=(char *)mmap(NULL, ftl_size ,PROT_WRITE,MAP_SHARED,fd,0);
 	memset(*ftl_name, 0, ftl_size);
 	close(fd);
+
+}
+
+
+
+int init_serial(){
+	int i;
+	serials_width[0]=LEV0_NUM;
+	serials_base[0]=SERIAL_BASE;
+	for(i=1;i<MAX_LEV;i++){
+		serials_width[i]=simple_pow(LEV_PUFFER, i);
+		serials_base[i]=serials_base[i-1]+serials_width[i-1];
+	}
+}
+
+
+int init_seg_bit_maps(){//now we just set all bits/bytes to 0, but actually we should read them from ftl
+	int i;
+	
+	
+	for(i=1;i<MAX_LEV;i++){
+		seg_bit_maps[i]=(char *)malloc(serials_width[i]);
+		memset(seg_bit_maps[i], 0, serials_width[i]);	
+	}
+	
+	//print_bit_map("init",seg_bit_maps[1], serials_width[1] );
+	
+}
+
+
+
+
+int init_tables_entry(){
+	int i;
+	for(i=1;i<MAX_LEV;i++){
+		struct FINDER_ENTRY *head_entry=(struct FINDER_ENTRY *)malloc(sizeof(struct FINDER_ENTRY) );
+		head_entry->next=NULL;
+		head_entry->pre=NULL;
+		head_entry->serial_num=0;
+		first_tables_entry[i]=head_entry;
+	}
+
 
 }
