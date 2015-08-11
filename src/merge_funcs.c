@@ -319,7 +319,7 @@ printf("in split_big_table1, 1111111111 lev=%d\n",lev);
 	//printf("start_pointer=%s, p1=%s,test_seg_bytes=%d\n",start_pointer,p1,test_seg_bytes);
 	
 	manua_splitted_last_key[splitted_tables_num]=p1;
-	splitted_tables_pointer[splitted_tables_num]=(char *)malloc(test_seg_bytes);
+	splitted_tables_pointer[splitted_tables_num]=(char *)malloc(test_seg_bytes);//should be freed
 	memset(splitted_tables_pointer[splitted_tables_num], 0 , test_seg_bytes);
 	//printf("p1=%p \n",p1);
 	//printf("splitted_tables_pointer[splitted_tables_num]=%p, start_pointer=%p, big_table=%p\n",splitted_tables_pointer[splitted_tables_num],start_pointer,big_table);
@@ -356,6 +356,7 @@ printf("in split_big_table1, 1111111111 lev=%d\n",lev);
 				discard_seg(temp->serial_num);
 				clear_bit_map(lev, temp->serial_num);
 				crossed_mark=crossed_mark->next;
+				if(lev==0) free(temp->table);
 				free(temp);
 				//free(lev0_tables[base_entry+i]);
 				//lev0_tables[base_entry+i]=NULL;
@@ -406,7 +407,7 @@ printf("in split_big_table1, 1111111111 lev=%d\n",lev);
 					write_seg(splitted_tables_pointer[i], new_serials[i] );	
 					new_entry->table=read_seg(new_serials[i]);
 					//printf("yyyyyyyyy\n");
-
+					free(splitted_tables_pointer[i]);//
 				//}
 			}
 					//the space will be freed 

@@ -64,18 +64,10 @@ int i;
 		//print_table("tip_table",tip_table);
 		//print_table("big_table",big_table);
 	}
-	struct FINDER_ENTRY* test=first_tables_entry[1]->next;
-	while(test!=NULL){
-		//	printf("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\n");
-			test=test->next;
-	}
+	
+	
 	split_big_table(big_table, crossed_num,  insert_point, full_lev+1);
 	 
-	 test=first_tables_entry[1]->next;
-		while(test!=NULL){
-		//	printf("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh\n");
-			test=test->next;
-		}
 	if(full_lev>=0){
 		chop_tip_entry(full_lev);
 	}
