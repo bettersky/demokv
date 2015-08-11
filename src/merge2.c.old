@@ -20,15 +20,23 @@ extern char *seg_bit_maps[];
 
 
 int give_tip_table(char **tip_table, int full_lev, char **tip_first_key, char **tip_last_key);
-int give_crossed_serials(int, char *, char *, uint64_t*, struct FINDER_ENTRY **);
+int give_crossed_serials(int lev, char *tip_first_key , char *tip_last_key, uint64_t *crossed_serials, struct FINDER_ENTRY **insert_point);
 int fill_crossed_tables(char ** crossed_tables, uint64_t *crossed_serials, int crossed_num);
 int fill_big_table2(char *big_table,char *tip_table, char** crossed_tables, int crossed_num);
 int split_big_table2(char * big_table, int crossed_num, struct FINDER_ENTRY *insert_point, int lev);
 int chop_lev(int full_lev);
-
+int give_crossed_chain(int lev, char *tip_first_key, char *tip_last_key, struct FINDER_ENTRY *crossed_entry_chain, struct FINDER_ENTRY **insert_point);
+// in merge1
 int merge2_num=0;
 
 int merge2(int full_lev){
+int i;
+	struct FINDER_ENTRY *test=first_tables_entry[0]->next;
+	print_table("tip-0", tip_tables_entry[0]->table);
+	for(i=0;i<LEV0_NUM;i++){
+		printf("%d: %s, %s\n",i, test->first_key,test->last_key);	
+		test=test->next;
+	}
 	//exit(1);
 	merge2_num++;
 	printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge2, full_lev=%d, merge2_num=%d \n", full_lev,merge2_num);
@@ -37,7 +45,7 @@ int merge2(int full_lev){
 		printf("merge2 puase, full_lev comes to=%d\n",full_lev);
 		exit(1);
 	}
-	int i;
+	
 	for(i=0;i<LEV0_NUM;i++){
 		//printf("lev0_tbales[%d]=%p\n",i, lev0_tables[i]);
 	}
@@ -56,16 +64,21 @@ int merge2(int full_lev){
 	//printf("tip table\n");
 	//print_table("tip table", tip_table);
 	//printf("tip_first_key=%s, tip_last_key=%s\n", tip_first_key,tip_last_key );
+	struct FINDER_ENTRY * crossed_entry_chain=(struct FINDER_ENTRY*)malloc(sizeof(struct FINDER_ENTRY));//for create big_table
+	memset(crossed_entry_chain,0,sizeof(struct FINDER_ENTRY));
 	
-	uint64_t crossed_serials[LEV_PUFFER*LEV_PUFFER]={0};//this should be enough
+	
+	//uint64_t crossed_serials[LEV_PUFFER*LEV_PUFFER]={0};//this should be enough
 	struct FINDER_ENTRY *insert_point=NULL;
 //printf("222222222, full_lev=%d\n",full_lev);		
 	//printf("before give_crossed_serials, insert_point=%p\n",insert_point);
-	int crossed_num=give_crossed_serials(full_lev+1, tip_first_key, tip_last_key, crossed_serials, &insert_point);
+	int crossed_num;
+	//crossed_num=give_crossed_serials(full_lev+1, tip_first_key, tip_last_key, crossed_serials, &insert_point);
+	crossed_num=give_crossed_chain(full_lev+1, tip_first_key, tip_last_key, crossed_entry_chain, &insert_point); 
 	//printf("after give_crossed_serials, crossed_num=%d, insert_point=%p\n",crossed_num,insert_point);
 //printf("5555555555555, full_lev=%d\n",full_lev);		
-	char *crossed_tables[crossed_num];
-	fill_crossed_tables( crossed_tables, crossed_serials, crossed_num);
+	//char *crossed_tables[crossed_num];
+	//fill_crossed_tables( crossed_tables, crossed_serials, crossed_num);
 	
 	
 	//printf("crossed table\n");
@@ -77,7 +90,8 @@ int merge2(int full_lev){
 	int big_table_size=(crossed_num+2)* test_seg_bytes;//crossed_num may be -1
 	char *big_table=(char*)malloc(big_table_size);
 	memset(big_table,0, big_table_size );
-	fill_big_table2(big_table,tip_table, crossed_tables,crossed_num );
+	//fill_big_table2(big_table,tip_table, crossed_tables,crossed_num );
+	fill_big_table1(big_table, tip_table, crossed_entry_chain, crossed_num);
 	//print_table("tip_table",tip_table);
 	//print_table("big_table",big_table);
 	
@@ -118,21 +132,21 @@ int give_tip_table(char **tip_table, int full_lev,char **tip_first_key, char **t
 	print_table("in give_tip_table", *tip_table);
 	
 	if(full_lev==0){
-		*tip_table=lev0_tables[LEV0_NUM-1];
-		*tip_first_key=lev0_tables[LEV0_NUM-1];
-		*tip_last_key=table_finder_0+ FINDER_ENTRY_LENGTH*(LEV0_NUM-1) + FINDER_KEY_LENGTH;
-		
-		return;
+		*tip_table=tip_tables_entry[0]->table;
+		//*tip_first_key=tip_tables_entry[0]->first_key;//lev0_tables[LEV0_NUM-1];
+		//*tip_last_key=tip_tables_entry[0]->last_key;//table_finder_0+ FINDER_ENTRY_LENGTH*(LEV0_NUM-1) + FINDER_KEY_LENGTH;
 	}
-	
+	else{
 	//now the lev full_lev must be full and the lev number is at least 1, we use tip_tables_entry[i] to get the table
 	//printf("tip_tables_entry[full_lev]->serial_num=%d\n",tip_tables_entry[full_lev]->serial_num);
-	*tip_table=read_seg(tip_tables_entry[full_lev]->serial_num);
+		*tip_table=read_seg(tip_tables_entry[full_lev]->serial_num);
+	}
 	*tip_first_key=tip_tables_entry[full_lev]->first_key;
 	*tip_last_key=tip_tables_entry[full_lev]->last_key;
 	//printf("in give_tip_table, *tip_table=%p\n",*tip_table);
 	//print_table("in giv_tip_table, tip_table",*tip_table);
 	
+	return 1;
 }
 
 
@@ -420,6 +434,7 @@ int i;
 	//new tables written --begin
 	for(i=0;i<splitted_tables_num;i++){
 		write_seg(splitted_tables_pointer[i], new_serials[i] );	
+		//the splitted_tables_pointer space isn't freed
 	}
 	//new tables written --end
 
@@ -443,10 +458,10 @@ int i;
 			new_entry->next=insert_point->next;
 			insert_point->next=new_entry;
 			new_entry->pre=insert_point;
-			if(new_entry->next!=NULL){//insert to the tail
+			if(new_entry->next!=NULL){
 				new_entry->next->pre=new_entry;
 			}
-			else{
+			else{//insert to the tail
 				tip_tables_entry[lev]=new_entry;
 			}
 			insert_point=new_entry;//advance the insert point
@@ -483,18 +498,18 @@ int i;
 int chop_lev(int full_lev){
 	printf("I am chop_lev, full_lev=%d\n",full_lev);
 
-	if(full_lev==0){
-	printf("ddddddddddd\n");
-		memset(table_finder_0+ FINDER_ENTRY_LENGTH*(LEV0_NUM-1), 0, FINDER_ENTRY_LENGTH);//sweep the last entry
+	//if(full_lev==0){
+	//printf("ddddddddddd\n");
+		//memset(table_finder_0+ FINDER_ENTRY_LENGTH*(LEV0_NUM-1), 0, FINDER_ENTRY_LENGTH);//sweep the last entry
 		//free the table
-		free(lev0_tables[LEV0_NUM-1]);
-		lev0_tables[LEV0_NUM-1]=NULL;
+		//free(lev0_tables[LEV0_NUM-1]);
+		//lev0_tables[LEV0_NUM-1]=NULL;
 		//update the levels_summary ftl file
 		
 	
-	}
-	else{
-	printf("gggggggggggg\n");
+	//}
+	//else{
+	//printf("gggggggggggg\n");
 		//discard the segment
 		struct FINDER_ENTRY *temp=tip_tables_entry[full_lev];
 		tip_tables_entry[full_lev]=tip_tables_entry[full_lev]->pre;
@@ -506,8 +521,8 @@ int chop_lev(int full_lev){
 		//free tip finder entry
 		free(temp);
 		temp=NULL;	
-printf("jjjjjjjjjjjjj\n");		
-	}
+//printf("jjjjjjjjjjjjj\n");		
+	//}
 	
 	( *(int*) ( levels_summary+ full_lev*LEVELS_SUMMARY_ENTRY) )--;
 

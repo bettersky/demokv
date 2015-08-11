@@ -1,0 +1,47 @@
+#include "segtable.h"
+#include "flash.h" //for device
+#include "tools.h"
+
+#include <stdio.h>
+#include <math.h>  //pow
+#include "merge.h"
+int merge2_num=0;
+
+
+int merge2(int full_lev){
+int i;
+	
+	merge2_num++;
+	printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge2, full_lev=%d, merge2_num=%d \n", full_lev,merge2_num);
+	
+	
+	char *tip_table=NULL;
+	char *tip_first_key;
+	char *tip_last_key;
+	give_tip_table(&tip_table, full_lev,&tip_first_key, &tip_last_key );
+	
+	struct FINDER_ENTRY * crossed_entry_chain=(struct FINDER_ENTRY*)malloc(sizeof(struct FINDER_ENTRY));//for create big_table
+	memset(crossed_entry_chain,0,sizeof(struct FINDER_ENTRY));
+	struct FINDER_ENTRY *insert_point=NULL;
+	int crossed_num;
+	crossed_num=give_crossed_chain(full_lev+1, tip_first_key, tip_last_key, crossed_entry_chain, &insert_point); 
+
+	int big_table_size=(crossed_num+2)* test_seg_bytes;//crossed_num may be -1
+	char *big_table=(char*)malloc(big_table_size);
+	memset(big_table,0, big_table_size );
+	fill_big_table(big_table, tip_table, crossed_entry_chain, crossed_num);
+	
+	split_big_table(big_table, crossed_num,  insert_point, full_lev+1);
+	
+	chop_lev(full_lev);	
+	
+	printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge2, end, full_lev=%d, merge2_num=%d \n", full_lev,merge2_num);
+	
+	return 0;
+	
+}
+
+
+
+
+

@@ -30,8 +30,9 @@ uint64_t *allocate_serial(int lev, int num){
 	uint64_t * serials=(uint64_t*)malloc(sizeof(uint64_t)*num);
 	uint64_t i;
 	uint64_t j=0;
-	printf("lev=%d\n",lev);
-	print_bit_map("bit map",seg_bit_maps[lev],serials_width[lev]);
+	printf("in allocate_serial, lev=%d, serials_width[lev]=%d, num=%d\n",lev,serials_width[lev],num);
+	print_bit_map("in allocate_serial,  bit map",seg_bit_maps[lev],serials_width[lev]);
+	printf("in allocate_serial, 222222222\n");
 	for(i=0;i<serials_width[lev];i++){
 		
 		if(seg_bit_maps[lev][i]==0){//blank and can be allocated
@@ -63,9 +64,7 @@ int write_seg(char *seg_buffer, uint64_t serial_num){
 
 
 uint64_t ftl_addr_map(uint64_t serial_num, char *arg){
-
-	uint64_t phy_seg=serial_num;
-	
+	uint64_t phy_seg=serial_num;	
 	if(phy_seg>device.segment_total){
 		printf("error in ftl_addr_map, phy_seg>device.segment_total, exit\n");
 		exit(1);

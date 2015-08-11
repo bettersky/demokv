@@ -27,8 +27,8 @@
 int put(char* key,char* value);
 int merge();
 
-int merge1();
-int merge2(int);
+int merge1(int full_lev);
+int merge2(int full_lev);
 
 struct KNODE{
 	char * key;
@@ -54,10 +54,12 @@ struct LEV0{
 struct FINDER_ENTRY{
 	char first_key[FINDER_KEY_LENGTH];
 	char last_key[FINDER_KEY_LENGTH];
-	uint64_t serial_num;
+	uint64_t serial_num;//for lev0, 
 	
 	struct FINDER_ENTRY *next;
 	struct FINDER_ENTRY *pre;
+	
+	char * table;//only for lev0
 	
 };
 

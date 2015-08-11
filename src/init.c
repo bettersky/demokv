@@ -153,7 +153,7 @@ int init_seg_bit_maps(){//now we just set all bits/bytes to 0, but actually we s
 	int i;
 	
 	
-	for(i=1;i<MAX_LEV;i++){
+	for(i=0;i<MAX_LEV;i++){
 		seg_bit_maps[i]=(char *)malloc(serials_width[i]);
 		memset(seg_bit_maps[i], 0, serials_width[i]);	
 	}
@@ -167,7 +167,7 @@ int init_seg_bit_maps(){//now we just set all bits/bytes to 0, but actually we s
 
 int init_tables_entry(){
 	int i;
-	for(i=1;i<MAX_LEV;i++){
+	for(i=0;i<MAX_LEV;i++){
 		struct FINDER_ENTRY *head_entry=(struct FINDER_ENTRY *)malloc(sizeof(struct FINDER_ENTRY) );
 		head_entry->next=NULL;
 		head_entry->pre=NULL;
