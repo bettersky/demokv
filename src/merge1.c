@@ -8,11 +8,25 @@
 #include "merge.h"
 int merge1_num=0;
 
+int merge_counter[2]={0};
 
 int merge1(int full_lev){
+if(full_lev==MAX_LEV-1){
+	printf("!!! all levels are full, exit\n");
+	exit(9);
+}
 int i;
 	merge1_num++;
-	printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, full_lev=%d, merge1_num=%d \n", full_lev,merge1_num);
+	int counter_flag;
+	if(full_lev==-1){ 
+		counter_flag=0;		
+	}
+	else{
+		counter_flag=1;
+		//if(merge_counter[counter_flag]==5) exit(3);
+	}
+	merge_counter[counter_flag]++;
+	printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, full_lev=%d, counter=%d \n", full_lev,merge_counter[counter_flag]);
 	
 	
 	char *tip_table=NULL;
@@ -37,20 +51,40 @@ int i;
 						//link in sequence
 	crossed_num=give_crossed_chain(full_lev+1, tip_first_key, tip_last_key, crossed_entry_chain, &insert_point);
 	
+	if(crossed_entry_chain->next){
+		//print_table("**********", crossed_entry_chain->next->table);
+		//exit(1);
+	}	
 	
-	int big_table_size=(crossed_num+2)* test_seg_bytes;//crossed_num may be -1
+	int big_table_size=(crossed_num+2)* test_seg_bytes;//crossed_num may be -1 //in chain crossed_num cann't be -1
 	char *big_table=(char*)malloc(big_table_size);
 	memset(big_table,0, big_table_size );
 	fill_big_table(big_table, tip_table, crossed_entry_chain, crossed_num);
-	
+	if(counter_flag==1){
+		//print_table("tip_table",tip_table);
+		//print_table("big_table",big_table);
+	}
+	struct FINDER_ENTRY* test=first_tables_entry[1]->next;
+	while(test!=NULL){
+		//	printf("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\n");
+			test=test->next;
+	}
 	split_big_table(big_table, crossed_num,  insert_point, full_lev+1);
-	
+	 
+	 test=first_tables_entry[1]->next;
+		while(test!=NULL){
+		//	printf("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh\n");
+			test=test->next;
+		}
 	if(full_lev>=0){
 		chop_tip_entry(full_lev);
 	}
+	else{
+		free(tip_table);
+	}
 	
 	//free
-	printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, end, merge1_num=%d \n",merge1_num);
+	printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, end, full_lev=%d, counter=%d \n", full_lev,merge_counter[counter_flag]);
 
 }
 

@@ -31,8 +31,8 @@ uint64_t *allocate_serial(int lev, int num){
 	uint64_t i;
 	uint64_t j=0;
 	printf("in allocate_serial, lev=%d, serials_width[lev]=%d, num=%d\n",lev,serials_width[lev],num);
-	print_bit_map("in allocate_serial,  bit map",seg_bit_maps[lev],serials_width[lev]);
-	printf("in allocate_serial, 222222222\n");
+	print_bit_map("before allocate_serial,  bit map",seg_bit_maps[lev],serials_width[lev]);
+	//printf("in allocate_serial, 222222222\n");
 	for(i=0;i<serials_width[lev];i++){
 		
 		if(seg_bit_maps[lev][i]==0){//blank and can be allocated
@@ -42,6 +42,8 @@ uint64_t *allocate_serial(int lev, int num){
 			if(j==num) break;
 		}	
 	}
+	print_bit_map("after allocate_serial,  bit map",seg_bit_maps[lev],serials_width[lev]);
+
 	if(j!=num){
 		printf("error in allocate_serial. exit. j=%d,num=%d,lev=%d, serials_width[lev]=%d\n",j,num, lev,serials_width[lev]);
 		exit(2);

@@ -102,7 +102,7 @@ printf("give_crossed_chain begin, lev=%d\n",lev);
 	*insert_point=first_tables_entry[lev];//point to the header node
 	//printf("give_crossed_serials, finder=%p,lev=%d\n",finder,lev);
 	int total_crossed=0;
-	
+	int has_cross=0;
 	printf("in give_crossed_chain, tip_first_key=%s, tip_last_key=%s\n", tip_first_key,tip_last_key);
 	if(finder!=NULL )printf("in give_crossed_chain, finder->first_key=%s,  finder->last_key=%s\n",  finder->first_key, finder->last_key);
 	while(finder!=NULL){
@@ -115,6 +115,10 @@ printf("give_crossed_chain begin, lev=%d\n",lev);
 			return total_crossed;
 		}
 		else if(strcmp(tip_first_key, finder->last_key)>0){//no cross, but followings may be crossing
+			if(has_cross){
+				printf("error in give_cross, exit\n");
+				exit(1);
+			}
 			*insert_point=finder;
 		}
 //printf("zzzzzzzzzzz\n");
@@ -125,14 +129,7 @@ printf("give_crossed_chain begin, lev=%d\n",lev);
 				crossed_entry_chain->next=finder;
 			}
 			total_crossed++;
-			//if(crossed_chain)
-			//crossed_serials[total_crossed++]=finder->serial_num;
-			//struct FINDER_ENTRY *new_crossed_entry=(struct FINDER_ENTRY *)malloc(sizeof(struct FINDER_ENTRY ));
-			//memcpy(new_crossed_entry, finder , sizeof(struct FINDER_ENTRY ));
-			//new_crossed_entry->next=NULL;//insert to tail
-			//crossed_entry_chain->next=new_crossed_entry;
-			//new_crossed_entry->pre=crossed_entry_chain;
-			//crossed_entry_chain=crossed_entry_chain->next;//ie. new_crossed_entry
+			has_cross=1;
 			
 		}
 		finder=finder->next;
@@ -373,6 +370,7 @@ printf("in split_big_table1, 1111111111 lev=%d\n",lev);
 	for(i=0;i<splitted_tables_num;i++){
 		printf("new_serials %d: %d\n",i+1, new_serials[i]);
 	}
+	printf("insert_point=%p, first_tables_entry[1]=%p,next=%p\n", insert_point,first_tables_entry[1],first_tables_entry[1]->next);
 	//assert
 	//allocate new serials --end
 	
@@ -403,13 +401,13 @@ printf("in split_big_table1, 1111111111 lev=%d\n",lev);
 				new_entry->table=splitted_tables_pointer[i];//special in lev0
 			}
 			else{
-				for(i=0;i<splitted_tables_num;i++){// lev0 will not need write
+				//for(i=0;i<splitted_tables_num;i++){// lev0 will not need write
 					//printf("xxxxx\n");
 					write_seg(splitted_tables_pointer[i], new_serials[i] );	
 					new_entry->table=read_seg(new_serials[i]);
 					//printf("yyyyyyyyy\n");
 
-				}
+				//}
 			}
 					//the space will be freed 
 			new_entry->next=insert_point->next;
@@ -424,6 +422,7 @@ printf("in split_big_table1, 1111111111 lev=%d\n",lev);
 			insert_point=new_entry;//advance the insert point
 	
 		}
+		
 //printf("22222222222222222222\n");
 	//update finder entry list --end
 	
@@ -443,6 +442,10 @@ printf("in split_big_table1, 1111111111 lev=%d\n",lev);
 
 
 	//other updates --end
+	
+	//free
+	free(new_serials);
+	new_serials=NULL;
 }
 
 
@@ -451,17 +454,17 @@ int give_tip_table(char **tip_table, int full_lev,char **tip_first_key, char **t
 		printf("--------give_tip_table begin\n");
 
 	
-	print_table("in give_tip_table", *tip_table);
+	//print_table("in give_tip_table", *tip_table);
 	
 	if(full_lev==0){
-		*tip_table=tip_tables_entry[0]->table;
+		//*tip_table=tip_tables_entry[0]->table;
 		//*tip_first_key=tip_tables_entry[0]->first_key;//lev0_tables[LEV0_NUM-1];
 		//*tip_last_key=tip_tables_entry[0]->last_key;//table_finder_0+ FINDER_ENTRY_LENGTH*(LEV0_NUM-1) + FINDER_KEY_LENGTH;
 	}
 	else{
 	//now the lev full_lev must be full and the lev number is at least 1, we use tip_tables_entry[i] to get the table
 	//printf("tip_tables_entry[full_lev]->serial_num=%d\n",tip_tables_entry[full_lev]->serial_num);
-		*tip_table=read_seg(tip_tables_entry[full_lev]->serial_num);
+		//*tip_table=read_seg(tip_tables_entry[full_lev]->serial_num);
 	}
 	*tip_table=tip_tables_entry[full_lev]->table;
 	*tip_first_key=tip_tables_entry[full_lev]->first_key;

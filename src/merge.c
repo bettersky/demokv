@@ -4,9 +4,7 @@
 #include <math.h>  //pow
 
 extern struct ATABLE *active_table;
-extern struct LEV0 * lev0_head;
-extern char *table_finder_0;
-extern char *lev0_tables[];
+
 extern char *levels_summary;
 
 extern uint64_t serials_width[];
