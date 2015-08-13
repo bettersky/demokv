@@ -33,7 +33,7 @@ int seq_write(){
 	uint64_t size=0;
 	size=100000;
 	printf("Input size:");
-	//scanf("%llu",&size);
+	scanf("%llu",&size);
 	
 	srand( (unsigned)time( NULL ) );
 	for(put_counter=0;put_counter<size;put_counter++){
@@ -52,24 +52,7 @@ int seq_write(){
 	//int lev0_nums=0;
 	
 	
-	for(i=0;i<MAX_LEV;i++){
-		int x=*(int*)(levels_summary+i*LEVELS_SUMMARY_ENTRY);
-		if(x==0){
-			printf("lev %d is zero\n",i);
-			break;
-		}
-		printf("tables in lev %d: %d\n",i,x);
-		
-		struct FINDER_ENTRY *test=first_tables_entry[i]->next;
-		int j=0;
-		while(test!=NULL){
-			j++;
-		//	printf("entry %d: serial=%d, first_key=%s | last_key=%s\n",j, test->serial_num ,test->first_key, test->last_key);
-			test=test->next;
-		}
-	}
 	
-	printf("merge_recur_num=%d\n",merge_recur_num);
 	//printf("lev1 tip entry %d: serial=%d, first_key=%s | last_key=%s\n",1, tip_tables_entry[1]->serial_num , tip_tables_entry[1]->first_key,  tip_tables_entry[1]->last_key);	
 	
 }

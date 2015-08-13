@@ -25,6 +25,8 @@ int put(char* key,char* value){
 	//decide whether need to merge --end
 	//put in --begin
 	struct KNODE *new_kv=(struct KNODE *)malloc(sizeof(struct KNODE));
+	memset(new_kv,0, sizeof(struct KNODE));
+	
 	new_kv->key=key;
 	new_kv->value=value;
 	
@@ -36,7 +38,7 @@ int put(char* key,char* value){
 	active_table->kv_num++;
 	active_table->kv_bytes+=key_size+value_size + 2; //2 '\0' characters 
 	
-	printf("%llu\r",put_counter);
+	//printf("%llu\r",put_counter);
 
 	//printf("I am put, atable size=%d\n",active_table->size);
 

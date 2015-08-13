@@ -2,57 +2,152 @@
 #include "flash.h"
 
 
-
+//#define FLAG_MAX 10
+#define FLAG_WIDTH 1024
 
 
 int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, char **tip_last_key){
 	//printf("--------fill_sorted_active_table begin\n");
 
-	struct ATABLE *active_table_old=active_table;
+	struct ATABLE *active_table_old=active_table;//active_table_old will be a sorted link list
+	print_atable("before, active_table_old", active_table_old);
 	active_table=NULL;
 	active_table = (struct ATABLE *)malloc(sizeof(struct ATABLE));//this should be able to serve new writes immediatly
 	memset(active_table, 0 , sizeof(struct ATABLE));
 	
-	struct KNODE *curr_node=active_table_old->key_head;//need to free, a linked list
+	
+	//struct KNODE_FLAG *flag==malloc();
+	//int flag_counter=0;
+	
 	int i;
+	struct KNODE *head=active_table_old->key_head;//cann't be null
+	struct KNODE *curr_node=active_table_old->key_head->next;//need to free, a linked list
+	
+	head->next=NULL;//disconnect the head
+//printf("before travel active_table, head->key=%s\n",head->key);	
+	int sort_counter=0;
+	for(;curr_node!=NULL;){ 
+	//printf("xx\n");
+	sort_counter++;
+	printf("sort_counter:%d, curr->key=%s\n",sort_counter, curr_node->key);
+	struct ATABLE *test;
+	test->key_head=head;
+	print_atable("test",test);
+	
+		struct KNODE *next_marker=curr_node->next;//because curr_node will be disconnected
+		struct KNODE *flag_advancer=head;
+		int cmp_res=strcmp(curr_node->key, head->key);
+		
+		
+		if(cmp_res>0){		
+		//printf("ggg\n");
+			int equal_f=0;
+//printf("before find flag, flag_advancer->key=%s,flag_advancer->flag_next=%p \n", flag_advancer->key, flag_advancer->flag_next);
 
-	for(;curr_node->next!=NULL;){ //sort the link list
-	//every cycle make the smallest remain knode  to the current position
-	//compare one by one with the following knodes, if this is bigger, then exchange their KV data
-	//
-		struct KNODE *stamp=curr_node;
-		//printf("xxxxxxxxxxxxxxxx\n");
-		for(;stamp->next!=NULL;){
-			struct KNODE *no_name= stamp->next;
+			for(;flag_advancer->flag_next!=NULL;){//using flag to skip
+				cmp_res=strcmp(curr_node->key, flag_advancer->flag_next->key);
+				
+				if(cmp_res<0){//good
+					break;
+				}
+				else if(cmp_res==0){
+					
+					equal_f=1;
+					break;
+				}
+				
+				flag_advancer=flag_advancer->flag_next;
+			}
+//printf("after find flag\n");
 			
-			if(strcmp(curr_node->key, no_name->key) ==0){//delete the repeated key nodes			
-				stamp->next=no_name->next;
-				free(no_name->key);
-				free(no_name->value);	
-				free(no_name);				
-				continue;
+			if(equal_f==1){
+				struct KNODE *temp=curr_node;//discard curr_node;break two times!!!!! to be done
+				curr_node=next_marker;
+				free(temp->key);
+				free(temp->value);	
+				free(temp);
+				equal_f=0;
+				break;
 			}
-			//printf("zzzzzzzzzzzzz\n");
-			if(strcmp(curr_node->key, no_name->key) >0 ){//exchange the KV
+			//now we find the insert flag
+			struct KNODE *find_advancer=flag_advancer;
+			for(i=0;find_advancer->next!=NULL;i++){
+			
+				if(i>0 && i%FLAG_WIDTH ==0){
+						//set new flag !!!!to be done
+						find_advancer->flag_next=flag_advancer->flag_next;
+						flag_advancer->flag_next=find_advancer;
+				}
 				
-				char *temp_key= no_name->key;
-				char *temp_value= no_name->value;
-				no_name->key= curr_node->key;
-				no_name->value=curr_node->value;				
-				curr_node->key=temp_key;
-				curr_node->value=temp_value;
-				
+				cmp_res=strcmp(curr_node->key, find_advancer->next->key);
+				//printf("curr_key=%s, find_advancer=%s, cmp_res=%s\n", );
+				if(cmp_res<0){//good , inset to here
+					break;
+				}
+				else if(cmp_res==0){//break to next curr_node;
+					
+					equal_f=1;
+					break;
+				}
+				find_advancer=find_advancer->next;
+							
 			}
-			stamp=stamp->next;
+			if(equal_f==1){
+			
+				struct KNODE *temp=curr_node;//discard curr_node;break two times !!!!! to be done
+				curr_node=next_marker;
+				free(temp->key);
+				free(temp->value);	
+				free(temp);
+				equal_f=0;
+				break;
+			}
+			//now we find the insert point: find_advancer
+			struct KNODE *temp=curr_node;//discard curr_node;break two times !!!!! to be done
+			curr_node=next_marker;
+			temp->next=find_advancer->next;
+			find_advancer->next=temp;
+			//go to next curr_node
 		}
 		
-		//printf("end for\n");
-		//printf("end for 1. curr_node=%p, curr_node->next=%p\n",curr_node,curr_node->next);
-		if(curr_node->next==NULL) break; 
-		curr_node=curr_node->next;//sort the next node
-		//printf("end for 2. curr_node=%p\n",curr_node);
+		else if(cmp_res<0){
+			////insert before the head
+			struct KNODE *temp=curr_node;
+			curr_node=next_marker;
+			
+			temp->next=head;
+			temp->flag_next=head->flag_next;
+			head->flag_next=NULL;
+			head=temp;
+			
+		}
+		else if(cmp_res==0){
+			//discard curr_node 
+			struct KNODE *temp=curr_node;//discard curr_node;break two times !!!!! to be done
+			curr_node=next_marker;
+			free(temp->key);
+			free(temp->value);	
+			free(temp);
+			break;
+		}
+	
+		//curr_node=next_marker;
 	}
+//printf("after travel active_table\n");	
+	
+	//now we get a sorted link table pointed by head
+	//printf("fill_sorted_table, sort finished\n");
 
+	
+	
+	
+	active_table_old->key_head=head;
+	
+	print_atable(" after sort active_table_old",active_table_old);
+	
+	
+	
+	
 	int copied_size=0;//indicates the total bytes of data have been copied to sorted_active_table
 	for(curr_node=active_table_old->key_head;curr_node->next!=NULL;curr_node=curr_node->next){
 		memcpy(sorted_active_table+copied_size, curr_node->key, strlen(curr_node->key)+1 );
@@ -75,6 +170,7 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 	//free struct ATABLE *active_table_old
 		*tip_first_key=active_first_key;
 		*tip_last_key=active_last_key;
+		printf("--------fill_sorted_active_table end, *tip_first_key=%s, active_last_key=%s\n",*tip_first_key,active_last_key);
 	for(curr_node=active_table_old->key_head;curr_node!=NULL;){
 		free(curr_node->key);
 		free(curr_node->value);
@@ -85,8 +181,9 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 	}
 	free(active_table_old);
 	
-	//printf("--------fill_sorted_active_table end\n");
-	
+	printf("--------fill_sorted_active_table end\n");
+	print_table("sorted_active_table",sorted_active_table);
+	return 0;
 }
 
 
@@ -103,8 +200,16 @@ int i=0;
 	//printf("give_crossed_serials, finder=%p,lev=%d\n",finder,lev);
 	int total_crossed=0;
 	int has_cross=0;
-	//printf("in give_crossed_chain, tip_first_key=%s, tip_last_key=%s\n", tip_first_key,tip_last_key);
+	printf("in give_crossed_chain, tip_first_key=%s, tip_last_key=%s\n", tip_first_key,tip_last_key);
 	//if(finder!=NULL )printf("in give_crossed_chain, finder->first_key=%s,  finder->last_key=%s\n",  finder->first_key, finder->last_key);
+	struct FINDER_ENTRY *test=finder;
+	i=0;
+	while(test!=NULL){
+	i++;
+		printf("%d, fisrt=%s, last=%s\n",i,test->first_key,test->last_key);
+		test=test->next;
+	}
+	
 	while(finder!=NULL){
 //printf("xxxxxxxxxxxx,tip_last_key=%s ,finder->first_key=%s\n",tip_last_key,finder->first_key);
 		if(strcmp(tip_last_key, finder->first_key)<0){//no following tables
@@ -112,11 +217,11 @@ int i=0;
 				*insert_point=finder->pre;//this node has pre
 				return 0;
 			}
-			return total_crossed;
+			break;
 		}
 		else if(strcmp(tip_first_key, finder->last_key)>0){//no cross, but followings may be crossing
-			if(has_cross){
-				//printf("error in give_cross, exit\n");
+			if(has_cross==1){
+				printf("error in give_cross, exit\n");
 				exit(1);
 			}
 			*insert_point=finder;
@@ -132,6 +237,7 @@ int i=0;
 			has_cross=1;
 			
 		}
+		
 		finder=finder->next;
 		i++;
 	

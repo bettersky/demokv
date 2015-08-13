@@ -33,9 +33,18 @@ int merge2(int full_lev);
 struct KNODE{
 	char * key;
 	struct KNODE * next;
-	
+	//struct KNODE * pre;
+	struct KNODE * flag_next;
 	char *value;
 };
+
+struct KNODE_FLAG{
+	struct KNODE * knode;
+	struct KNODE_FLAG *next;
+	
+
+};
+
 struct ATABLE{
 	int kv_bytes;//totabl bytes
 	int kv_num;//kv numbers

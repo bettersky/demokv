@@ -56,7 +56,8 @@ int merge(){
 		
 		//step 4: merge
 		
-		//printf("%llu\r",put_counter);
+		printf("In merge end, put_counter=%llu\r",put_counter);
+		//printf("\n");
 
 }
 

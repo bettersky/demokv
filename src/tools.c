@@ -15,7 +15,7 @@ void print_table(char* str,char *table){
 				break;
 			}
 			if(*test==0) break;
-				printf("%d: key=%s, ", ++i, test);
+				printf("%03d: key=%s, ", ++i, test);
 				size+=strlen(test)+1;
 				test=test+strlen(test)+1;
 				
@@ -33,13 +33,15 @@ void print_atable(char *str, struct ATABLE *table){
 	struct KNODE *pk=table->key_head;
 	int i;
 	for(i=0;pk!=NULL;pk=pk->next){//print test					s
-				printf("%d: key=%s, ", ++i, pk->key);								
+				printf("%03d: key=%s, ", ++i, pk->key);								
 				printf("value=%s,                        ", pk->value);	
 				printf("\n");
 	}
 	printf("------------------------------------------------------%s---\n\n",str);
 
 }
+
+
 
 
 uint64_t simple_pow(int base , int exp){

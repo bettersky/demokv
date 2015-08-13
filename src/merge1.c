@@ -11,7 +11,7 @@ int merge1_num=0;
 int merge_counter[2]={0};
 
 int merge1(int full_lev){
-printf("\nI am merge1 \n");
+//printf("\nI am merge1 \n");
 	if(full_lev==MAX_LEV-1){
 		printf("!!! all levels are full, exit\n");
 		exit(9);
@@ -39,9 +39,10 @@ printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 		char *sorted_active_table=malloc(test_seg_bytes);//should be freed
 		memset(sorted_active_table,0, test_seg_bytes);	
-		printf("..............\n");	
+		//printf("..............\n");	
 
 		fill_sorted_active_table(sorted_active_table,&tip_first_key,&tip_last_key);
+printf("3333333333333\n");	
 
 		tip_table=sorted_active_table;
 
@@ -50,15 +51,16 @@ printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		give_tip_table(&tip_table, full_lev,&tip_first_key, &tip_last_key );
 
 	}
-	
+printf("xxxxxxxxxxx\n");	
 	struct FINDER_ENTRY * crossed_entry_chain=(struct FINDER_ENTRY*)malloc(sizeof(struct FINDER_ENTRY));//for create big_table
 								//all links in the chain should be freed
 	memset(crossed_entry_chain,0,sizeof(struct FINDER_ENTRY));
 	struct FINDER_ENTRY *insert_point=NULL;//for split big_table and inserting new tables
 	int crossed_num;//crossed_entry_chain will be decided by the first crossed entry and the crossed_num. because crossd tables aways
 						//link in sequence
+printf("3333333333333\n");
 	crossed_num=give_crossed_chain(full_lev+1, tip_first_key, tip_last_key, crossed_entry_chain, &insert_point);
-	
+printf("666666666666\n");	
 	//if(crossed_num>0){
 		//print_table("tip_table",tip_table);
 		//print_table("crossed_entry_chain",crossed_entry_chain->next->table);
@@ -77,7 +79,7 @@ printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		//print_table("big_table",big_table);
 	}
 	
-	
+printf("yyyyyyyyyyyy\n");	
 	split_big_table(big_table, crossed_num,  insert_point, full_lev+1);
 	 
 	if(full_lev>=0){

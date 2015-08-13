@@ -27,14 +27,42 @@ struct FINDER_ENTRY *tip_tables_entry[MAX_LEV]; //pointers of the last tables of
 struct FINDER_ENTRY *first_tables_entry[MAX_LEV];//pointers of the first table of every level if the level is not blank. 0 is reserved to lev 0
 														//NULL indicates the level is blank
 
+extern int  merge_recur_num;
 
-														
+
+void print_tail();														
 int test(){
 	printf("I m test \n");
 	char *args="/dev/sdp";
 	flash_init(args);
 	pow(3,4);
 	//kv_write();
-	seq_write();
-	//random_write();
+	//seq_write();
+	random_write();
+	
+	print_tail();
+	printf("Test end\n");
+}
+
+void print_tail(){
+	int i;
+	for(i=0;i<MAX_LEV;i++){
+			int x=*(int*)(levels_summary+i*LEVELS_SUMMARY_ENTRY);
+			if(x==0){
+				printf("lev %d is zero\n",i);
+				break;
+			}
+			printf("tables in lev %d: %d\n",i,x);
+			
+			struct FINDER_ENTRY *test=first_tables_entry[i]->next;
+			int j=0;
+			while(test!=NULL){
+				j++;
+				printf("entry %d: serial=%d, first_key=%s | last_key=%s\n",j, test->serial_num ,test->first_key, test->last_key);
+				test=test->next;
+			}
+	}
+		
+	printf("merge_recur_num=%d\n",merge_recur_num);
+		
 }
