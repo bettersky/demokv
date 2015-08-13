@@ -10,7 +10,7 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 	//printf("--------fill_sorted_active_table begin\n");
 
 	struct ATABLE *active_table_old=active_table;//active_table_old will be a sorted link list
-	print_atable("before, active_table_old", active_table_old);
+	//print_atable("before, active_table_old", active_table_old);
 	active_table=NULL;
 	active_table = (struct ATABLE *)malloc(sizeof(struct ATABLE));//this should be able to serve new writes immediatly
 	memset(active_table, 0 , sizeof(struct ATABLE));
@@ -29,10 +29,8 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 	for(;curr_node!=NULL;){ 
 	//printf("xx\n");
 	sort_counter++;
-	printf("sort_counter:%d, curr->key=%s\n",sort_counter, curr_node->key);
-	struct ATABLE *test;
-	test->key_head=head;
-	print_atable("test",test);
+	//printf("sort_counter:%d, curr->key=%s\n",sort_counter, curr_node->key);
+	
 	
 		struct KNODE *next_marker=curr_node->next;//because curr_node will be disconnected
 		struct KNODE *flag_advancer=head;
@@ -143,7 +141,7 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 	
 	active_table_old->key_head=head;
 	
-	print_atable(" after sort active_table_old",active_table_old);
+	//print_atable(" after sort active_table_old",active_table_old);
 	
 	
 	
@@ -170,7 +168,7 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 	//free struct ATABLE *active_table_old
 		*tip_first_key=active_first_key;
 		*tip_last_key=active_last_key;
-		printf("--------fill_sorted_active_table end, *tip_first_key=%s, active_last_key=%s\n",*tip_first_key,active_last_key);
+		//printf("--------fill_sorted_active_table end, *tip_first_key=%s, active_last_key=%s\n",*tip_first_key,active_last_key);
 	for(curr_node=active_table_old->key_head;curr_node!=NULL;){
 		free(curr_node->key);
 		free(curr_node->value);
@@ -180,9 +178,10 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 			//free big table
 	}
 	free(active_table_old);
-	
-	printf("--------fill_sorted_active_table end\n");
-	print_table("sorted_active_table",sorted_active_table);
+	//printf("--------fill_sorted_active_table end, *tip_first_key=%s, active_last_key=%s\n",*tip_first_key,active_last_key);
+
+	//printf("--------fill_sorted_active_table end\n");
+//print_table("sorted_active_table",sorted_active_table);
 	return 0;
 }
 
@@ -200,15 +199,9 @@ int i=0;
 	//printf("give_crossed_serials, finder=%p,lev=%d\n",finder,lev);
 	int total_crossed=0;
 	int has_cross=0;
-	printf("in give_crossed_chain, tip_first_key=%s, tip_last_key=%s\n", tip_first_key,tip_last_key);
+	//printf("in give_crossed_chain, tip_first_key=%s, tip_last_key=%s\n", tip_first_key,tip_last_key);
 	//if(finder!=NULL )printf("in give_crossed_chain, finder->first_key=%s,  finder->last_key=%s\n",  finder->first_key, finder->last_key);
-	struct FINDER_ENTRY *test=finder;
-	i=0;
-	while(test!=NULL){
-	i++;
-		printf("%d, fisrt=%s, last=%s\n",i,test->first_key,test->last_key);
-		test=test->next;
-	}
+	
 	
 	while(finder!=NULL){
 //printf("xxxxxxxxxxxx,tip_last_key=%s ,finder->first_key=%s\n",tip_last_key,finder->first_key);

@@ -1,0 +1,13 @@
+big bug 1:
+
+在put函数中，为KNODE分配内存后，未填0，导致后面的flag_next出现随机值，导致异常现象
+
+
+bigbug 2：
+
+在fill_sorted_active_table函数中，进行字符串比较时
+	cmp_res=strcmp(curr_node->key, find_advancer->next->key);
+	
+	没有加入key，写成了
+		cmp_res=strcmp(curr_node, find_advancer->next->key);
+导致最终的排序未按照key排序，使得后面出现了异常
