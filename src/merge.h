@@ -24,4 +24,7 @@ int give_tip_table(char **tip_table, int full_lev, char **tip_first_key, char **
 int give_crossed_chain(int lev, char *tip_first_key, char *tip_last_key, struct FINDER_ENTRY *crossed_entry_chain, struct FINDER_ENTRY **insert_point);
 int chop_tip_entry(int full_lev);
 
+
+int merge_recur(int full_lev, struct FINDER_ENTRY* tip_entry);
+
 #endif

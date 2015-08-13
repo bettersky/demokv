@@ -6,7 +6,7 @@
 
 
 int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, char **tip_last_key){
-	printf("--------fill_sorted_active_table begin\n");
+	//printf("--------fill_sorted_active_table begin\n");
 
 	struct ATABLE *active_table_old=active_table;
 	active_table=NULL;
@@ -85,7 +85,7 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 	}
 	free(active_table_old);
 	
-	printf("--------fill_sorted_active_table end\n");
+	//printf("--------fill_sorted_active_table end\n");
 	
 }
 
@@ -93,18 +93,18 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 
 
 int give_crossed_chain(int lev, char *tip_first_key, char *tip_last_key, struct FINDER_ENTRY *crossed_entry_chain, struct FINDER_ENTRY **insert_point){
-	printf("--------give_crossed_chain begin\n");
+	//printf("--------give_crossed_chain begin\n");
 
 int i=0;
-printf("give_crossed_chain begin, lev=%d\n",lev);
+//printf("give_crossed_chain begin, lev=%d\n",lev);
 	
 	struct FINDER_ENTRY *finder=first_tables_entry[lev]->next;//point to the header
 	*insert_point=first_tables_entry[lev];//point to the header node
 	//printf("give_crossed_serials, finder=%p,lev=%d\n",finder,lev);
 	int total_crossed=0;
 	int has_cross=0;
-	printf("in give_crossed_chain, tip_first_key=%s, tip_last_key=%s\n", tip_first_key,tip_last_key);
-	if(finder!=NULL )printf("in give_crossed_chain, finder->first_key=%s,  finder->last_key=%s\n",  finder->first_key, finder->last_key);
+	//printf("in give_crossed_chain, tip_first_key=%s, tip_last_key=%s\n", tip_first_key,tip_last_key);
+	//if(finder!=NULL )printf("in give_crossed_chain, finder->first_key=%s,  finder->last_key=%s\n",  finder->first_key, finder->last_key);
 	while(finder!=NULL){
 //printf("xxxxxxxxxxxx,tip_last_key=%s ,finder->first_key=%s\n",tip_last_key,finder->first_key);
 		if(strcmp(tip_last_key, finder->first_key)<0){//no following tables
@@ -116,7 +116,7 @@ printf("give_crossed_chain begin, lev=%d\n",lev);
 		}
 		else if(strcmp(tip_first_key, finder->last_key)>0){//no cross, but followings may be crossing
 			if(has_cross){
-				printf("error in give_cross, exit\n");
+				//printf("error in give_cross, exit\n");
 				exit(1);
 			}
 			*insert_point=finder;
@@ -137,7 +137,7 @@ printf("give_crossed_chain begin, lev=%d\n",lev);
 	
 	}
 
-	printf("--------give_crossed_chain end\n");
+	//printf("--------give_crossed_chain end\n");
 
 	return total_crossed;
 }
@@ -145,7 +145,7 @@ printf("give_crossed_chain begin, lev=%d\n",lev);
 
 
 int fill_big_table(char *big_table, char *tip_table, struct FINDER_ENTRY *crossed_entry_chain, int crossed_num){
-	printf("--------fill_big_table1 begin\n");
+	//printf("--------fill_big_table1 begin\n");
 
 	int i;
 	//char *sorted_active_table=tip_table;
@@ -159,7 +159,7 @@ int fill_big_table(char *big_table, char *tip_table, struct FINDER_ENTRY *crosse
 	memset(union_crossed_tables, 0, (crossed_num)* test_seg_bytes +1);
 	
 	char *union_advancer=union_crossed_tables;//anvances the cross union
-	printf("in fill_big_table1,crossed_entry_chain=%p \n",crossed_entry_chain);
+	//printf("in fill_big_table1,crossed_entry_chain=%p \n",crossed_entry_chain);
 	
 	for(i=0;i<crossed_num;i++){
 	//for(;crossed_entry_chain!=NULL;crossed_entry_chain=crossed_entry_chain->next){//copy the crossed tables to union_crossed_tables
@@ -241,7 +241,7 @@ int fill_big_table(char *big_table, char *tip_table, struct FINDER_ENTRY *crosse
 	//print_table("in fill big table, big table", big_table);
 	
 	//if(merge2_num==2) exit(1);
-	printf("--------fill_big_table1 end\n");
+	//printf("--------fill_big_table1 end\n");
 
 	return 1;
 
@@ -252,14 +252,14 @@ int fill_big_table(char *big_table, char *tip_table, struct FINDER_ENTRY *crosse
 
 
 int split_big_table(char * big_table, int crossed_num, struct FINDER_ENTRY *insert_point, int lev){
-	printf("--------split_big_table1 begin\n");
+	//printf("--------split_big_table1 begin\n");
 
 int i;
 
 	//print_table("in splitting, big table", big_table);
 	
 	//if(merge2_num==2) exit(1);
-printf("in split_big_table1, 1111111111 lev=%d\n",lev);	
+//printf("in split_big_table1, 1111111111 lev=%d\n",lev);	
 //exit(1);
 	char *big_table_advancer=big_table;
 	int splitting_counter=0;
@@ -329,8 +329,30 @@ printf("in split_big_table1, 1111111111 lev=%d\n",lev);
 	splitted_tables_num++;//make it the ture num of splitted tables
 	//splitting finished. splitted tables are store int splitted_tables_pointer[]. there are splitted_tables_num splitted tables
 	
+	int curr_lev_max=serials_width[lev];
+	int inc_num=splitted_tables_num-crossed_num;
+	int curr_lev_num=*(int*)(levels_summary+lev*LEVELS_SUMMARY_ENTRY);
 	
-	printf("crossed_num=%d,splitted_tables_num=%d, big_table_advancer-start_pointer=%d\n",crossed_num,splitted_tables_num,big_table_advancer-start_pointer);
+	//printf("crossed_num=%d,splitted_tables_num=%d, big_table_advancer-start_pointer=%d\n",crossed_num,splitted_tables_num,big_table_advancer-start_pointer);
+	
+	if(curr_lev_num+inc_num>curr_lev_max){
+	//printf("curr_lev_num=%d,inc_num=%d, curr_lev_max=%d\n",curr_lev_num, inc_num, curr_lev_max );
+		int i;
+		for(i=0;i<curr_lev_num+inc_num-curr_lev_max;i++){
+		
+			struct FINDER_ENTRY *temp=(struct FINDER_ENTRY *)malloc(sizeof(struct FINDER_ENTRY ));
+			temp->table=splitted_tables_pointer[splitted_tables_num-1-i];
+			memcpy(temp->first_key, manua_splitted_first_key[splitted_tables_num-1-i],strlen(manua_splitted_first_key[splitted_tables_num-1-i]));
+			memcpy(temp->last_key, manua_splitted_last_key[splitted_tables_num-1-i],strlen( manua_splitted_last_key[splitted_tables_num-1-i]));
+			merge_recur(lev,temp);
+			free(temp);
+			
+		}
+		
+		splitted_tables_num= curr_lev_max+crossed_num-curr_lev_num;
+	}
+	
+	
 	for(i=0;i<splitted_tables_num;i++){
 		//printf("splitted_table:%d, first_key=%s, last_key=%s\n",i,manua_splitted_first_key[i],manua_splitted_last_key[i]);
 		//print_table("splitted_table",splitted_tables_pointer[i]);
@@ -362,16 +384,16 @@ printf("in split_big_table1, 1111111111 lev=%d\n",lev);
 				//lev0_tables[base_entry+i]=NULL;
 		}
 	}
-	printf("in split1, garbage reclaim end\n");
+	//printf("in split1, garbage reclaim end\n");
 	//garbage reclaim --end
 	//printf("crossed_num",crossed_num,);
 	//allocate new serials --begin
 	uint64_t *new_serials; //lev0 will not need this 
 	new_serials=allocate_serial(lev,splitted_tables_num);
 	for(i=0;i<splitted_tables_num;i++){
-		printf("new_serials %d: %d\n",i+1, new_serials[i]);
+		//printf("new_serials %d: %d\n",i+1, new_serials[i]);
 	}
-	printf("insert_point=%p, first_tables_entry[1]=%p,next=%p\n", insert_point,first_tables_entry[1],first_tables_entry[1]->next);
+	//printf("insert_point=%p, first_tables_entry[1]=%p,next=%p\n", insert_point,first_tables_entry[1],first_tables_entry[1]->next);
 	//assert
 	//allocate new serials --end
 	
@@ -394,9 +416,11 @@ printf("in split_big_table1, 1111111111 lev=%d\n",lev);
 			new_entry=(struct FINDER_ENTRY *)malloc(sizeof(struct FINDER_ENTRY ) );
 			memset(new_entry,0, sizeof(struct FINDER_ENTRY ));
 				//printf("splitted %d: first:%s  last:%s\n",i, manua_splitted_first_key[i],manua_splitted_last_key[i] );
-			memcpy(new_entry->first_key, manua_splitted_first_key[i], strlen(manua_splitted_first_key[i]) );// make sure manua_splitted_first_key
+				int copy_size= FINDER_KEY_LENGTH<strlen(manua_splitted_first_key[i]) ?FINDER_KEY_LENGTH :strlen(manua_splitted_first_key[i]);
+			memcpy(new_entry->first_key, manua_splitted_first_key[i], copy_size );// make sure manua_splitted_first_key
 										//is zeroed when created
-			memcpy(new_entry->last_key, manua_splitted_last_key[i], strlen(manua_splitted_last_key[i]) );
+				copy_size= FINDER_KEY_LENGTH<strlen(manua_splitted_last_key[i]) ?FINDER_KEY_LENGTH :strlen(manua_splitted_last_key[i]);
+			memcpy(new_entry->last_key, manua_splitted_last_key[i],copy_size );
 			new_entry->serial_num=new_serials[i];//not need in lev0
 			if(lev==0){
 				new_entry->table=splitted_tables_pointer[i];//special in lev0
@@ -439,7 +463,7 @@ printf("in split_big_table1, 1111111111 lev=%d\n",lev);
 
 	( *(int*) ( levels_summary+ (lev)*LEVELS_SUMMARY_ENTRY) )+= inc;
 	
-	printf("--------split_big_table1 end\n");
+	//printf("--------split_big_table1 end\n");
 
 
 	//other updates --end
@@ -452,7 +476,7 @@ printf("in split_big_table1, 1111111111 lev=%d\n",lev);
 
 
 int give_tip_table(char **tip_table, int full_lev,char **tip_first_key, char **tip_last_key){
-		printf("--------give_tip_table begin\n");
+		//printf("--------give_tip_table begin\n");
 
 	
 	//print_table("in give_tip_table", *tip_table);
@@ -472,7 +496,7 @@ int give_tip_table(char **tip_table, int full_lev,char **tip_first_key, char **t
 	*tip_last_key=tip_tables_entry[full_lev]->last_key;
 	//printf("in give_tip_table, *tip_table=%p\n",*tip_table);
 	//print_table("in giv_tip_table, tip_table",*tip_table);
-			printf("--------give_tip_table end\n");
+			//printf("--------give_tip_table end\n");
 
 	return 1;
 }
@@ -480,9 +504,9 @@ int give_tip_table(char **tip_table, int full_lev,char **tip_first_key, char **t
 
 
 int chop_tip_entry(int full_lev){
-	printf("--------chop_lev begin\n");
+	//printf("--------chop_lev begin\n");
 
-	printf("I am chop_lev, full_lev=%d\n",full_lev);
+	//printf("I am chop_lev, full_lev=%d\n",full_lev);
 
 		struct FINDER_ENTRY *temp=tip_tables_entry[full_lev];
 		tip_tables_entry[full_lev]=tip_tables_entry[full_lev]->pre;
@@ -497,7 +521,7 @@ int chop_tip_entry(int full_lev){
 
 	( *(int*) ( levels_summary+ full_lev*LEVELS_SUMMARY_ENTRY) )--;
 	
-	printf("--------chop_lev end\n");
+	//printf("--------chop_lev end\n");
 
 }
 

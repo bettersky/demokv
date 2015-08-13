@@ -34,6 +34,7 @@ int test(){
 	char *args="/dev/sdp";
 	flash_init(args);
 	pow(3,4);
-	kv_write();
-
+	//kv_write();
+	seq_write();
+	//random_write();
 }

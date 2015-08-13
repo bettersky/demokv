@@ -2,3 +2,5 @@
 int test();
 
 int kv_write();
+int seq_write();
+int random_write();

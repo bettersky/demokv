@@ -9,9 +9,11 @@ extern char *levels_summary;
 
 extern uint64_t serials_width[];
 
+extern uint64_t put_counter;//in seq_write
+
 
 int merge(){
-	printf(">>>>>>>>>>>>>>>>>>>>>>>I am merge, levels_summary=%p \n", levels_summary);
+	//printf(">>>>>>>>>>>>>>>>>>>>>>>I am merge, levels_summary=%p \n", levels_summary);
 	//step a: recursively find a not full level, if the result is lev0 go to step 1, else go to step b;
 	int max_level=MAX_LEV;//7
 	int i;
@@ -22,7 +24,7 @@ int merge(){
 			uint32_t tables_num ;
 			tables_num=*(uint32_t*)(levels_summary +i*LEVELS_SUMMARY_ENTRY);
 			//fscanf(levels_summary, "%d", &tables_num);
-			printf("/////////////level %d: tables_num=%d ,levels_summary+i*LEVELS_SUMMARY_ENTRY=%p \n",i,tables_num,levels_summary+i*LEVELS_SUMMARY_ENTRY);
+			//printf("/////////////level %d: tables_num=%d ,levels_summary+i*LEVELS_SUMMARY_ENTRY=%p \n",i,tables_num,levels_summary+i*LEVELS_SUMMARY_ENTRY);
 			
 			if(tables_num<serials_width[i]){
 				break;
@@ -54,7 +56,7 @@ int merge(){
 		
 		//step 4: merge
 		
-		printf("merge end\n");
+		//printf("%llu\r",put_counter);
 
 }
 

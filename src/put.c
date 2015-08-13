@@ -4,7 +4,7 @@
 extern struct DEVICE device;//defined in flash.h
 extern struct ATABLE *active_table;//defined in egtable.h
 extern char *levels_summary;
-
+extern put_counter;
 int put(char* key,char* value){
 	//printf("I am put\n");
 	int key_size=strlen(key);
@@ -36,6 +36,8 @@ int put(char* key,char* value){
 	active_table->kv_num++;
 	active_table->kv_bytes+=key_size+value_size + 2; //2 '\0' characters 
 	
+	printf("%llu\r",put_counter);
+
 	//printf("I am put, atable size=%d\n",active_table->size);
 
 }

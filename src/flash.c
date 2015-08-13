@@ -1,6 +1,9 @@
 #include "flash.h"
 #include "segtable.h"
 extern struct DEVICE device;
+extern char *levels_summary;
+
+
 
 extern uint64_t serials_base[]; //all levels' base serial number. 0 is reserved
 extern uint64_t serials_width[];// all levels' serial width. decided by the LEV)_NUM and LEV_PUFFER
@@ -30,8 +33,9 @@ uint64_t *allocate_serial(int lev, int num){
 	uint64_t * serials=(uint64_t*)malloc(sizeof(uint64_t)*num);
 	uint64_t i;
 	uint64_t j=0;
-	printf("in allocate_serial, lev=%d, serials_width[lev]=%d, num=%d\n",lev,serials_width[lev],num);
-	print_bit_map("before allocate_serial,  bit map",seg_bit_maps[lev],serials_width[lev]);
+	//printf("in allocate_serial, lev=%d, serials_width[lev]=%d, num=%d, ( *(int*) ( levels_summary+ lev*LEVELS_SUMMARY_ENTRY) )=%d\n",
+			//lev,serials_width[lev],num,( *(int*) ( levels_summary+ lev*LEVELS_SUMMARY_ENTRY) ));
+	//print_bit_map("before allocate_serial,  bit map",seg_bit_maps[lev],serials_width[lev]);
 	//printf("in allocate_serial, 222222222\n");
 	for(i=0;i<serials_width[lev];i++){
 		
@@ -42,7 +46,7 @@ uint64_t *allocate_serial(int lev, int num){
 			if(j==num) break;
 		}	
 	}
-	print_bit_map("after allocate_serial,  bit map",seg_bit_maps[lev],serials_width[lev]);
+	//print_bit_map("after allocate_serial,  bit map",seg_bit_maps[lev],serials_width[lev]);
 
 	if(j!=num){
 		printf("error in allocate_serial. exit. j=%d,num=%d,lev=%d, serials_width[lev]=%d\n",j,num, lev,serials_width[lev]);
@@ -55,10 +59,10 @@ uint64_t *allocate_serial(int lev, int num){
 int write_seg(char *seg_buffer, uint64_t serial_num){
 	
 	//should mapped to physic segment
-	//printf("i am write_seg,device.mmap_begin =%p \n",device.mmap_begin );
+	//printf("i am write_seg,device.mmap_begin =%p ,serial_num=%d,seg_buffer=%s\n",device.mmap_begin,serial_num ,seg_buffer);
 	uint64_t phy_seg=ftl_addr_map(serial_num, "write");
 	
-	memcpy(device.mmap_begin + serial_num*device.segment_bytes, seg_buffer, device.segment_bytes);
+	memcpy(device.mmap_begin + phy_seg*device.segment_bytes, seg_buffer, device.segment_bytes);
 	
 
 }
