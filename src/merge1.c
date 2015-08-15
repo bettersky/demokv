@@ -29,7 +29,7 @@ int merge1(int full_lev){
 		//if(merge_counter[counter_flag]==5) exit(3);
 	}
 	merge_counter[counter_flag]++;
-//printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, full_lev=%d, counter=%d \n", full_lev,merge_counter[counter_flag]);
+printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, full_lev=%d, counter=%d \n", full_lev,merge_counter[counter_flag]);
 	
 	
 	char *tip_table=NULL;
@@ -37,14 +37,14 @@ int merge1(int full_lev){
 	char *tip_last_key=NULL;
 	if(full_lev==-1){
 
-		char *sorted_active_table=malloc(test_seg_bytes);//should be freed
-		memset(sorted_active_table,0, test_seg_bytes);	
+		tip_table=malloc(test_seg_bytes);//should be freed
+		memset(tip_table,0, test_seg_bytes);	
 		//printf("..............\n");	
 
-		fill_sorted_active_table(sorted_active_table,&tip_first_key,&tip_last_key);
+		fill_sorted_active_table(tip_table,&tip_first_key,&tip_last_key);
 //printf("3333333333333\n");	
 
-		tip_table=sorted_active_table;
+		//tip_table=sorted_active_table;
 
 	}
 	else{
@@ -54,6 +54,7 @@ int merge1(int full_lev){
 //printf("xxxxxxxxxxx\n");	
 	struct FINDER_ENTRY * crossed_entry_chain=(struct FINDER_ENTRY*)malloc(sizeof(struct FINDER_ENTRY));//for create big_table
 								//all links in the chain should be freed
+				//this chain is a part in the total entry link list. now this is freed in split_big_table()
 	memset(crossed_entry_chain,0,sizeof(struct FINDER_ENTRY));
 	struct FINDER_ENTRY *insert_point=NULL;//for split big_table and inserting new tables
 	int crossed_num;//crossed_entry_chain will be decided by the first crossed entry and the crossed_num. because crossd tables aways
@@ -72,8 +73,10 @@ int merge1(int full_lev){
 	}	
 	int big_table_size=(crossed_num+2)* test_seg_bytes;//crossed_num may be -1 //in chain crossed_num cann't be -1
 	char *big_table=(char*)malloc(big_table_size);
+	//this should be freed after split, because split function mallocs new space to store data
 	memset(big_table,0, big_table_size );
 	fill_big_table(big_table, tip_table, crossed_entry_chain, crossed_num);
+
 	if(counter_flag==0){
 		//print_table("tip_table",tip_table);
 		//print_table("big_table",big_table);
@@ -81,14 +84,15 @@ int merge1(int full_lev){
 	
 //printf("yyyyyyyyyyyy\n");	
 	split_big_table(big_table, crossed_num,  insert_point, full_lev+1);
-	 
-	if(full_lev>=0){
+	free(big_table);
+	if(full_lev!=-1){
 		chop_tip_entry(full_lev);
 	}
 	else{
 		free(tip_table);
 	}
 	
+	free(crossed_entry_chain);
 	//free
 	//printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, end, full_lev=%d, counter=%d \n", full_lev,merge_counter[counter_flag]);
 

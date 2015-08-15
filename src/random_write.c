@@ -26,9 +26,9 @@ int random_write(){
 	uint64_t i;
 	int end=0;
 	uint64_t size=0;
-	size=100000;
-	printf("Input size:");
-	//scanf("%llu",&size);
+	size=10000000;
+	printf("Input size:\n");
+	scanf("%llu",&size);
 	
 	srand( (unsigned)time( NULL ) );
 	for(put_counter=0;put_counter<size;put_counter++){
@@ -37,7 +37,7 @@ int random_write(){
 		char *value=malloc(20);
 		memset(key,0,10);
 		
-		sprintf(key,"%19llu",rand());
+		sprintf(key,"%019llu",rand());
 		
 		generate_string(value, 20);
 		

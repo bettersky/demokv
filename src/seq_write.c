@@ -32,7 +32,7 @@ int seq_write(){
 	int end=0;
 	uint64_t size=0;
 	size=100000;
-	printf("Input size:");
+	printf("Input size:\n");
 	scanf("%llu",&size);
 	
 	srand( (unsigned)time( NULL ) );

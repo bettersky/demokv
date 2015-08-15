@@ -37,8 +37,8 @@ int test(){
 	flash_init(args);
 	pow(3,4);
 	//kv_write();
-	//seq_write();
-	random_write();
+	seq_write();
+	//random_write();
 	
 	print_tail();
 	printf("Test end\n");
@@ -58,7 +58,7 @@ void print_tail(){
 			int j=0;
 			while(test!=NULL){
 				j++;
-				printf("entry %d: serial=%d, first_key=%s | last_key=%s\n",j, test->serial_num ,test->first_key, test->last_key);
+				//printf("entry %d: serial=%d, first_key=%s | last_key=%s\n",j, test->serial_num ,test->first_key, test->last_key);
 				test=test->next;
 			}
 	}

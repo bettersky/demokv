@@ -24,6 +24,9 @@
 //lev 0
 //#define KV_LENGTH 64
 #define LEV_PUFFER 10
+
+#define MAX_KEY_LENGTH 40	//for KNODE
+#define MAX_VALUE_LENGTH 1024 //for KNODE
 int put(char* key,char* value);
 int merge();
 
@@ -38,7 +41,7 @@ struct KNODE{
 	char *value;
 };
 
-struct KNODE_FLAG{
+struct KNODE_FLAG{//no use
 	struct KNODE * knode;
 	struct KNODE_FLAG *next;
 	

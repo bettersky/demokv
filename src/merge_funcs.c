@@ -464,13 +464,16 @@ int i;
 	if(insert_point!=NULL){//discard crossed tables in the entry links
 
 		struct FINDER_ENTRY *cross_tables_advancer;
-		cross_tables_advancer=insert_point->next;
+		cross_tables_advancer=insert_point->next;//this is crossed_entry_chain
 		struct FINDER_ENTRY *crossed_mark=cross_tables_advancer;//mark for free
 		for(i=0;i<crossed_num;i++){	
 			cross_tables_advancer=cross_tables_advancer->next;//advance to end
 		}
 		insert_point->next=cross_tables_advancer;//discard the crossed entry node
-		if(cross_tables_advancer!=NULL) cross_tables_advancer->pre=insert_point;
+		if(cross_tables_advancer!=NULL){
+			cross_tables_advancer->pre->next=NULL;//make the crossed end to point NULL, for security
+			cross_tables_advancer->pre=insert_point;
+		}
 		
 		for(i=0;i<crossed_num;i++){		//free crossed entries and the respond segments
 				struct FINDER_ENTRY *temp=crossed_mark;
