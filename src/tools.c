@@ -71,3 +71,11 @@ void print_bit_map(char *str, char *bit_map, int size){
 	printf("------------------------------------------------------%s---\n\n",str);
 	
 }
+
+
+void generate_string(char *value, int max){
+	int i;
+	
+	i=rand();
+	sprintf(value, "%d",i);
+}

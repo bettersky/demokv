@@ -1,4 +1,11 @@
-fill_sorted_active_table函数中
+1. fill_sorted_active_table函数中
 
 KNODE类型里的key和value使用指针，是因为刚开始的排序函数使用的算法所致，但是新算法可以让其使用数组。
 使用数组的好处是free的时候不需要进行那么多操作。
+
+
+2. fill_big_table函数中
+
+	将交叉表连接时，需要遍历来得到每个交叉表的长度
+		
+		优化方案：在表的结尾存储表的数据长度

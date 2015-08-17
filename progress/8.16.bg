@@ -1,0 +1,4 @@
+seg 32MB
+
+随机插入到full_lev=1, counter=137时，出现
+	Segmentation fault (core dumped)

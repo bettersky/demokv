@@ -27,26 +27,33 @@
 
 #define MAX_KEY_LENGTH 40	//for KNODE
 #define MAX_VALUE_LENGTH 1024 //for KNODE
+
+#define FLAG_LEVEL_MAX 10
+#define FLAG_LEVEL_PUFFER 10
+
+
+#define FLAG_WIDTH 2048
 int put(char* key,char* value);
 int merge();
 
 int merge1(int full_lev);
 int merge2(int full_lev);
 
+
+
 struct KNODE{
-	char * key;
+	//char * key;
+	char key[MAX_KEY_LENGTH];
 	struct KNODE * next;
 	//struct KNODE * pre;
 	struct KNODE * flag_next;
-	char *value;
-};
-
-struct KNODE_FLAG{//no use
-	struct KNODE * knode;
-	struct KNODE_FLAG *next;
 	
-
+	struct KNODE *flag[FLAG_LEVEL_MAX];
+	//char *value;
+	char value[MAX_VALUE_LENGTH];
 };
+
+
 
 struct ATABLE{
 	int kv_bytes;//totabl bytes
@@ -75,4 +82,5 @@ struct FINDER_ENTRY{
 	
 };
 
+struct KNODE * search_insert_point(int curr_flag_level, struct KNODE *bigger_flag_point, char *searching_key);
 #endif

@@ -6,6 +6,11 @@
 #include <math.h>  //pow
 
 #include "merge.h"
+
+#include <time.h>
+#define s_to_ns 1000000000
+
+
 int merge1_num=0;
 
 int merge_counter[2]={0};
@@ -30,7 +35,9 @@ int merge1(int full_lev){
 	}
 	merge_counter[counter_flag]++;
 printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, full_lev=%d, counter=%d \n", full_lev,merge_counter[counter_flag]);
-	
+double duration=0;
+struct timespec begin, end; 
+clock_gettime(CLOCK_MONOTONIC,&begin); //begin insert , so begin counting 
 	
 	char *tip_table=NULL;
 	char *tip_first_key=NULL;
@@ -85,16 +92,19 @@ printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //printf("yyyyyyyyyyyy\n");	
 	split_big_table(big_table, crossed_num,  insert_point, full_lev+1);
 	free(big_table);
-	if(full_lev!=-1){
-		chop_tip_entry(full_lev);
+	if(full_lev==-1){
+		free(tip_table);		
 	}
 	else{
-		free(tip_table);
+		chop_tip_entry(full_lev);
 	}
 	
 	free(crossed_entry_chain);
 	//free
-	//printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, end, full_lev=%d, counter=%d \n", full_lev,merge_counter[counter_flag]);
+clock_gettime(CLOCK_MONOTONIC,&end); //begin insert , so begin counting
+duration=( (int)end.tv_sec+((double)end.tv_nsec)/s_to_ns ) - ( (int)begin.tv_sec+((double)begin.tv_nsec)/s_to_ns );
+printf("merge duration=%f s\n",duration);
+printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, end, full_lev=%d, counter=%d \n", full_lev,merge_counter[counter_flag]);
 
 }
 

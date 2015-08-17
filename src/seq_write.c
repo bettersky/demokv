@@ -17,12 +17,7 @@ extern struct FINDER_ENTRY *tip_tables_entry[MAX_LEV];
 extern int  merge_recur_num;
 uint64_t put_counter=0;
 
-void generate_string(char *value, int max){
-	int i;
-	
-	i=rand();
-	sprintf(value, "%d",i);
-}
+
 
 int seq_write(){
 	printf("i am seq_write\n");	
@@ -34,16 +29,19 @@ int seq_write(){
 	size=100000;
 	printf("Input size:\n");
 	scanf("%llu",&size);
-	
+	printf("%llu\n",size);
 	srand( (unsigned)time( NULL ) );
+	char key[MAX_KEY_LENGTH]={0};
+	char value[MAX_VALUE_LENGTH]={0};// =malloc(20);
+		//=malloc(10);
+	
 	for(put_counter=0;put_counter<size;put_counter++){
-		char *key=malloc(10);
-		memset(key,0,10);
-		char *value=malloc(20);
-		memset(key,0,10);
+	
+		memset(key,0,MAX_KEY_LENGTH);		
+		memset(key,0,MAX_VALUE_LENGTH);
+		sprintf(key,"%019llu",put_counter);
 		
-		sprintf(key,"%19llu",put_counter);
-		generate_string(value, 20);
+		generate_string(value, MAX_VALUE_LENGTH);
 		
 		//printf("key=%s, value=%s\n",key,value);
 		put(key,value);

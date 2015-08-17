@@ -29,6 +29,8 @@ struct FINDER_ENTRY *first_tables_entry[MAX_LEV];//pointers of the first table o
 
 extern int  merge_recur_num;
 
+struct KNODE *active_chain;
+
 
 void print_tail();														
 int test(){
@@ -37,8 +39,8 @@ int test(){
 	flash_init(args);
 	pow(3,4);
 	//kv_write();
-	seq_write();
-	//random_write();
+	//seq_write();
+	random_write();
 	
 	print_tail();
 	printf("Test end\n");

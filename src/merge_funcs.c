@@ -1,9 +1,10 @@
 #include "merge.h"
 #include "flash.h"
+#include "segtable.h"
 
 
 //#define FLAG_MAX 10
-#define FLAG_WIDTH 1024
+
 
 
 int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, char **tip_last_key){
@@ -20,7 +21,7 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 	//int flag_counter=0;
 	
 	int i;
-	struct KNODE *head=active_table_old->key_head;//cann't be null
+	struct KNODE *head=active_table_old->key_head;//cann't be null， this is a real data node
 	struct KNODE *curr_node=active_table_old->key_head->next;//need to free, a linked list
 	
 	head->next=NULL;//disconnect the head
@@ -33,7 +34,7 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 	
 	
 		struct KNODE *next_marker=curr_node->next;//because curr_node will be disconnected
-		struct KNODE *flag_advancer=head;
+		struct KNODE *flag_advancer=head;//head always is a flag
 		int cmp_res=strcmp(curr_node->key, head->key);
 		
 		
@@ -48,24 +49,26 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 				if(cmp_res<0){//good
 					break;
 				}
+				else if(cmp_res>0){//>0
+					flag_advancer=flag_advancer->flag_next;
+				}
 				else if(cmp_res==0){
 					
 					equal_f=1;
 					break;
 				}
 				
-				flag_advancer=flag_advancer->flag_next;
 			}
 //printf("after find flag\n");
 			
 			if(equal_f==1){
 				struct KNODE *temp=curr_node;//discard curr_node;break two times!!!!! to be done
 				curr_node=next_marker;
-				free(temp->key);
-				free(temp->value);	
+				//free(temp->key);
+				//free(temp->value);	
 				free(temp);
 				equal_f=0;
-				break;
+				continue;//break;
 			}
 			//now we find the insert flag
 			struct KNODE *find_advancer=flag_advancer;
@@ -79,29 +82,30 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 				
 				cmp_res=strcmp(curr_node->key, find_advancer->next->key);
 				//printf("curr_key=%s, find_advancer=%s, cmp_res=%s\n", );
-				if(cmp_res<0){//good , inset to here
+				if(cmp_res>0){//>0, we think this is very possible so first check it 
+					find_advancer=find_advancer->next;
+				}			
+				else if(cmp_res<0){//good , inset to here
 					break;
-				}
-				else if(cmp_res==0){//break to next curr_node;
+				}	
+				else if(cmp_res==0){//break to continue next curr_node;
 					
 					equal_f=1;
 					break;
-				}
-				find_advancer=find_advancer->next;
-							
+				}		
 			}
 			if(equal_f==1){
 			
 				struct KNODE *temp=curr_node;//discard curr_node;break two times !!!!! to be done
 				curr_node=next_marker;
-				free(temp->key);
-				free(temp->value);	
+				//free(temp->key);
+				//free(temp->value);	
 				free(temp);
 				equal_f=0;
-				break;
+				continue;//break;  continue next curr
 			}
 			//now we find the insert point: find_advancer
-			struct KNODE *temp=curr_node;//discard curr_node;break two times !!!!! to be done
+			struct KNODE *temp=curr_node;
 			curr_node=next_marker;
 			temp->next=find_advancer->next;
 			find_advancer->next=temp;
@@ -109,6 +113,7 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 		}
 		
 		else if(cmp_res<0){
+		//printf("ffffffff\n");
 			////insert before the head
 			struct KNODE *temp=curr_node;
 			curr_node=next_marker;
@@ -123,10 +128,10 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 			//discard curr_node 
 			struct KNODE *temp=curr_node;//discard curr_node;break two times !!!!! to be done
 			curr_node=next_marker;
-			free(temp->key);
-			free(temp->value);	
+			//free(temp->key);
+			//free(temp->value);	
 			free(temp);
-			break;
+			continue;//break;
 		}
 	
 		//curr_node=next_marker;
@@ -170,8 +175,8 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 		*tip_last_key=active_last_key;
 		//printf("--------fill_sorted_active_table end, *tip_first_key=%s, active_last_key=%s\n",*tip_first_key,active_last_key);
 	for(curr_node=active_table_old->key_head;curr_node!=NULL;){
-		free(curr_node->key);
-		free(curr_node->value);
+		//free(curr_node->key);
+		//free(curr_node->value);
 		struct KNODE *temp=curr_node;
 		curr_node=curr_node->next;
 		free(temp);
@@ -222,6 +227,7 @@ int i=0;
 //printf("zzzzzzzzzzz\n");
 		else{
 			//now that comes here, this table must be crossing
+			//printf("rrrrr\n");
 			if(total_crossed==0){
 				*insert_point=finder->pre;//
 				crossed_entry_chain->next=finder;
@@ -268,7 +274,7 @@ int fill_big_table(char *big_table, char *tip_table, struct FINDER_ENTRY *crosse
 			uint32_t copy_size=0;
 			//printf("debug1, i=%d, advancer=%p\n",i,advancer);
 			
-			while(*advancer!=0){//caculate the i-th table size
+			while(*advancer!=0){//caculate the i-th table size 
 				int kv_len=strlen(advancer)+1 + strlen(advancer+ strlen(advancer)+1 ) +1;
 				copy_size+=kv_len;
 				advancer+=kv_len;
@@ -450,6 +456,19 @@ int i;
 		
 		splitted_tables_num= curr_lev_max+crossed_num-curr_lev_num;
 	}
+	//update the levels_summary --begin
+	int inc=0;
+	if(crossed_num==0){
+		inc=splitted_tables_num;
+	}
+	else{
+		inc =splitted_tables_num-crossed_num;
+	}
+//printf("55555555555, levels_summary=%p, inc=%d, lev=%d \n",levels_summary,inc, lev);
+//printf("before inc, %d\n", ( *(int*) ( levels_summary+ (lev)*LEVELS_SUMMARY_ENTRY) ));
+	( *(int*) ( levels_summary+ (lev)*LEVELS_SUMMARY_ENTRY) )+= inc;
+//printf("after inc, %d\n", ( *(int*) ( levels_summary+ (lev)*LEVELS_SUMMARY_ENTRY) ));
+	//update the levels_summary --end
 	
 	
 	for(i=0;i<splitted_tables_num;i++){
@@ -554,16 +573,6 @@ int i;
 	//update finder entry list --end
 	
 	//other updates --begin
-	int inc=0;
-	if(crossed_num==0){
-		inc=splitted_tables_num;
-	}
-	else{
-		inc =splitted_tables_num-crossed_num;
-	}
-//printf("55555555555, levels_summary=%p, inc=%d, lev=%d \n",levels_summary,inc, lev);
-
-	( *(int*) ( levels_summary+ (lev)*LEVELS_SUMMARY_ENTRY) )+= inc;
 	
 	//printf("--------split_big_table1 end\n");
 
@@ -605,7 +614,7 @@ int give_tip_table(char **tip_table, int full_lev,char **tip_first_key, char **t
 
 
 
-int chop_tip_entry(int full_lev){
+int chop_tip_entry(int full_lev){//full_lev would be at least 0
 	//printf("--------chop_lev begin\n");
 
 	//printf("I am chop_lev, full_lev=%d\n",full_lev);
@@ -618,6 +627,9 @@ int chop_tip_entry(int full_lev){
 		//update the finder entry
 		temp->pre->next=NULL;
 		//free tip finder entry
+		if(full_lev==0){
+			free(temp->table);
+		}
 		free(temp);
 		temp=NULL;	
 

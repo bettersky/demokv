@@ -24,11 +24,15 @@ int put(char* key,char* value){
 	}
 	//decide whether need to merge --end
 	//put in --begin
+	char *searching_key=key;
+	
 	struct KNODE *new_kv=(struct KNODE *)malloc(sizeof(struct KNODE));
 	memset(new_kv,0, sizeof(struct KNODE));
 	
-	new_kv->key=key;
-	new_kv->value=value;
+	//new_kv->key=key;
+	strcpy(new_kv->key, key);
+	//new_kv->value=value;
+	strcpy(new_kv->value, value);
 	
 	new_kv->next=active_table->key_head;
 	active_table->key_head=new_kv;
