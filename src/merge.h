@@ -14,6 +14,9 @@ extern struct FINDER_ENTRY *first_tables_entry[MAX_LEV];
 extern uint64_t serials_width[];
 extern char *seg_bit_maps[];
 
+extern int flag_width[];
+extern struct KNODE *active_chain_head;
+
 int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, char **tip_last_key);
 
 int fill_big_table(char *big_table, char *tip_table, struct FINDER_ENTRY *crossed_entry_chain, int crossed_num);

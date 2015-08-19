@@ -82,3 +82,193 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 	
 }
 
+
+
+
+
+
+
+
+int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, char **tip_last_key){
+	//printf("--------fill_sorted_active_table begin\n");
+
+	struct ATABLE *active_table_old=active_table;//active_table_old will be a sorted link list
+	//print_atable("before, active_table_old", active_table_old);
+	active_table=NULL;
+	active_table = (struct ATABLE *)malloc(sizeof(struct ATABLE));//this should be able to serve new writes immediatly
+	memset(active_table, 0 , sizeof(struct ATABLE));
+	
+	
+	//struct KNODE_FLAG *flag==malloc();
+	//int flag_counter=0;
+	
+	int i;
+	struct KNODE *head=active_table_old->key_head;//cann't be null， this is a real data node
+	struct KNODE *curr_node=active_table_old->key_head->next;//need to free, a linked list
+	
+	head->next=NULL;//disconnect the head
+//printf("before travel active_table, head->key=%s\n",head->key);	
+	int sort_counter=0;
+	for(;curr_node!=NULL;){ 
+	//printf("xx\n");
+	sort_counter++;
+	//printf("sort_counter:%d, curr->key=%s\n",sort_counter, curr_node->key);
+	
+	
+		struct KNODE *next_marker=curr_node->next;//because curr_node will be disconnected
+		struct KNODE *flag_advancer=head;//head always is a flag
+		int cmp_res=strcmp(curr_node->key, head->key);
+		
+		
+		if(cmp_res>0){		
+		//printf("ggg\n");
+			int equal_f=0;
+//printf("before find flag, flag_advancer->key=%s,flag_advancer->flag_next=%p \n", flag_advancer->key, flag_advancer->flag_next);
+
+			for(;flag_advancer->flag_next!=NULL;){//using flag to skip
+				cmp_res=strcmp(curr_node->key, flag_advancer->flag_next->key);
+				
+				if(cmp_res<0){//good
+					break;
+				}
+				else if(cmp_res>0){//>0
+					flag_advancer=flag_advancer->flag_next;
+				}
+				else if(cmp_res==0){
+					
+					equal_f=1;
+					break;
+				}
+				
+			}
+//printf("after find flag\n");
+			
+			if(equal_f==1){
+				struct KNODE *temp=curr_node;//discard curr_node;break two times!!!!! to be done
+				curr_node=next_marker;
+				//free(temp->key);
+				//free(temp->value);	
+				free(temp);
+				equal_f=0;
+				continue;//break;
+			}
+			//now we find the insert flag
+			struct KNODE *find_advancer=flag_advancer;
+			for(i=0;find_advancer->next!=NULL;i++){
+			
+				if(i>0 && i%FLAG_WIDTH ==0){
+						//set new flag !!!!to be done
+						find_advancer->flag_next=flag_advancer->flag_next;
+						flag_advancer->flag_next=find_advancer;
+				}
+				
+				cmp_res=strcmp(curr_node->key, find_advancer->next->key);
+				//printf("curr_key=%s, find_advancer=%s, cmp_res=%s\n", );
+				if(cmp_res>0){//>0, we think this is very possible so first check it 
+					find_advancer=find_advancer->next;
+				}			
+				else if(cmp_res<0){//good , inset to here
+					break;
+				}	
+				else if(cmp_res==0){//break to continue next curr_node;
+					
+					equal_f=1;
+					break;
+				}		
+			}
+			if(equal_f==1){
+			
+				struct KNODE *temp=curr_node;//discard curr_node;break two times !!!!! to be done
+				curr_node=next_marker;
+				//free(temp->key);
+				//free(temp->value);	
+				free(temp);
+				equal_f=0;
+				continue;//break;  continue next curr
+			}
+			//now we find the insert point: find_advancer
+			struct KNODE *temp=curr_node;
+			curr_node=next_marker;
+			temp->next=find_advancer->next;
+			find_advancer->next=temp;
+			//go to next curr_node
+		}
+		
+		else if(cmp_res<0){
+		//printf("ffffffff\n");
+			////insert before the head
+			struct KNODE *temp=curr_node;
+			curr_node=next_marker;
+			
+			temp->next=head;
+			temp->flag_next=head->flag_next;
+			head->flag_next=NULL;
+			head=temp;
+			
+		}
+		else if(cmp_res==0){
+			//discard curr_node 
+			struct KNODE *temp=curr_node;//discard curr_node;break two times !!!!! to be done
+			curr_node=next_marker;
+			//free(temp->key);
+			//free(temp->value);	
+			free(temp);
+			continue;//break;
+		}
+	
+		//curr_node=next_marker;
+	}
+//printf("after travel active_table\n");	
+	
+	//now we get a sorted link table pointed by head
+	//printf("fill_sorted_table, sort finished\n");
+
+	
+	
+	
+	active_table_old->key_head=head;
+	
+	//print_atable(" after sort active_table_old",active_table_old);
+	
+	
+	
+	
+	int copied_size=0;//indicates the total bytes of data have been copied to sorted_active_table
+	for(curr_node=active_table_old->key_head;curr_node->next!=NULL;curr_node=curr_node->next){
+		memcpy(sorted_active_table+copied_size, curr_node->key, strlen(curr_node->key)+1 );
+		copied_size+=strlen(curr_node->key)+1;
+		memcpy(sorted_active_table+copied_size, curr_node->value, strlen(curr_node->value)+1 );
+		copied_size+=strlen(curr_node->value)+1;	
+	}
+	
+	//leave the last for getting the last key without if clause --begin
+	int last_key_offset=copied_size;
+	memcpy(sorted_active_table+copied_size, curr_node->key, strlen(curr_node->key)+1 );
+	copied_size+=strlen(curr_node->key)+1;
+	memcpy(sorted_active_table+copied_size, curr_node->value, strlen(curr_node->value)+1 );
+	copied_size+=strlen(curr_node->value)+1;
+	char *active_first_key=sorted_active_table;//active_table_old->key_head->key;
+	char *active_last_key=sorted_active_table+last_key_offset;//curr_node->key;
+	//printf("first_key:%s last_key:%s\n",active_first_key,active_last_key);
+	//leave the last for getting the last key without if clause --end
+	//construct a sorted table --end
+	//free struct ATABLE *active_table_old
+		*tip_first_key=active_first_key;
+		*tip_last_key=active_last_key;
+		//printf("--------fill_sorted_active_table end, *tip_first_key=%s, active_last_key=%s\n",*tip_first_key,active_last_key);
+	for(curr_node=active_table_old->key_head;curr_node!=NULL;){
+		//free(curr_node->key);
+		//free(curr_node->value);
+		struct KNODE *temp=curr_node;
+		curr_node=curr_node->next;
+		free(temp);
+			//free big table
+	}
+	free(active_table_old);
+	//printf("--------fill_sorted_active_table end, *tip_first_key=%s, active_last_key=%s\n",*tip_first_key,active_last_key);
+
+	//printf("--------fill_sorted_active_table end\n");
+//print_table("sorted_active_table",sorted_active_table);
+	return 0;
+}
+

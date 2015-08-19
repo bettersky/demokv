@@ -30,9 +30,9 @@ void print_table(char* str,char *table){
 
 void print_atable(char *str, struct ATABLE *table){
 	printf("\n---%s------------------------------------------------------\n",str);
-	struct KNODE *pk=table->key_head;
+	struct KNODE *pk=&(table->key_head);
 	int i;
-	for(i=0;pk!=NULL;pk=pk->next){//print test					s
+	for(i=0;pk!=NULL;pk=pk->flag[0]){//print test					s
 				printf("%03d: key=%s, ", ++i, pk->key);								
 				printf("value=%s,                        ", pk->value);	
 				printf("\n");
@@ -41,7 +41,18 @@ void print_atable(char *str, struct ATABLE *table){
 
 }
 
-
+void print_knode_chain(char *str, struct KNODE *head){
+	printf("\n---%s------------------------------------------------------\n",str);
+	struct KNODE *pk=head;
+	int i;
+	for(i=0;pk!=NULL;pk=pk->flag[0]){//print test					s
+				printf("%03d: key=%s, ", ++i, pk->key);								
+				//printf("value=%s,                        ", pk->value);	
+				printf("node=%p",pk);
+				printf("\n");
+	}
+	printf("------------------------------------------------------%s---\n\n",str);
+}
 
 
 uint64_t simple_pow(int base , int exp){

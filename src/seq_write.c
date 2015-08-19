@@ -17,14 +17,15 @@ extern struct FINDER_ENTRY *tip_tables_entry[MAX_LEV];
 extern int  merge_recur_num;
 uint64_t put_counter=0;
 
-
+#include <time.h>
+#define s_to_ns 1000000000	
 
 int seq_write(){
 	printf("i am seq_write\n");	
 	
 	
 	uint64_t i;
-	int end=0;
+
 	uint64_t size=0;
 	size=100000;
 	printf("Input size:\n");
@@ -34,6 +35,9 @@ int seq_write(){
 	char key[MAX_KEY_LENGTH]={0};
 	char value[MAX_VALUE_LENGTH]={0};// =malloc(20);
 		//=malloc(10);
+double duration=0;
+struct timespec begin, end; 
+clock_gettime(CLOCK_MONOTONIC,&begin); //begin insert , so begin counting 
 	
 	for(put_counter=0;put_counter<size;put_counter++){
 	
@@ -46,7 +50,10 @@ int seq_write(){
 		//printf("key=%s, value=%s\n",key,value);
 		put(key,value);
 	}
-	
+
+clock_gettime(CLOCK_MONOTONIC,&end); //begin insert , so begin counting
+duration=( (int)end.tv_sec+((double)end.tv_nsec)/s_to_ns ) - ( (int)begin.tv_sec+((double)begin.tv_nsec)/s_to_ns );
+printf("write duration=%f s\n",duration);		
 	//int lev0_nums=0;
 	
 	

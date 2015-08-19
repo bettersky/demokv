@@ -29,22 +29,50 @@ struct FINDER_ENTRY *first_tables_entry[MAX_LEV];//pointers of the first table o
 
 extern int  merge_recur_num;
 
-struct KNODE *active_chain;
+struct KNODE *active_chain_head;
+int flag_width[FLAG_LEVEL_MAX];
 
 
-void print_tail();														
+void print_tail();		
+void print_tail2();		
+
+#include <time.h>
+#define s_to_ns 1000000000										
 int test(){
 	printf("I m test \n");
 	char *args="/dev/sdp";
 	flash_init(args);
 	pow(3,4);
-	//kv_write();
-	//seq_write();
-	random_write();
 	
-	print_tail();
+
+	//kv_write();
+	seq_write();
+	//random_write();
+
+	//print_tail();
+	print_tail2();
 	printf("Test end\n");
 }
+
+
+void print_tail2(){
+	int i;
+	for(i=0;i<FLAG_LEVEL_MAX;i++){
+		if(active_table->key_head.flag[i]!=NULL){
+			int j=0;
+			struct KNODE *temp= active_table->key_head.flag[i];
+			while(temp!=NULL){
+				j++;
+				temp=temp->flag[i];
+			}
+			
+			printf("flags in level %d:   %d\n",i,j);
+		}
+	}
+	
+
+}
+
 
 void print_tail(){
 	int i;

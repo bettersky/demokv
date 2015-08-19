@@ -24,6 +24,9 @@ extern struct FINDER_ENTRY *tip_tables_entry[]; //pointers of the last tables of
 													//NULL indicates the level is not full
 extern struct FINDER_ENTRY *first_tables_entry[];
 
+extern struct KNODE *active_chain_head;
+extern flag_width[];
+
 int read_disk(void *);
 int init_ftl();
 int init_memory();
@@ -34,7 +37,7 @@ int init_seg_bit_maps();
 
 int init_tables_entry();
 
-
+int init_flag();
 int flash_init(void * args){
 	read_disk(args);
 	init_ftl();
@@ -44,6 +47,8 @@ int flash_init(void * args){
 	init_serial();
 	init_seg_bit_maps();
 	init_tables_entry();
+	
+	init_flag();
 	//exit(10);
 	//if is formatted, call flash_open
 	//else first call flash_formate, then call flash_open
@@ -121,6 +126,9 @@ int init_ftl(){
 int init_memory(){
 	active_table=malloc(sizeof(struct ATABLE));
 	memset(active_table, 0, sizeof(struct ATABLE));
+	
+	//active_chain_head=(struct KNODE*)malloc(sizeof(struct KNODE));
+	//memset(active_chain_head, 0, sizeof(struct KNODE));
 }
 
 
@@ -175,5 +183,13 @@ int init_tables_entry(){
 		first_tables_entry[i]=head_entry;
 	}
 
+
+}
+
+int init_flag(){
+	int i;
+	for(i=1;i<FLAG_LEVEL_MAX;i++){
+		flag_width[i]=simple_pow(FLAG_LEVEL_PUFFER, i);
+	}
 
 }

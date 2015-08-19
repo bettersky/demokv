@@ -28,11 +28,11 @@
 #define MAX_KEY_LENGTH 40	//for KNODE
 #define MAX_VALUE_LENGTH 1024 //for KNODE
 
-#define FLAG_LEVEL_MAX 10
-#define FLAG_LEVEL_PUFFER 10
+#define FLAG_LEVEL_MAX 50
+#define FLAG_LEVEL_PUFFER 5
 
 
-#define FLAG_WIDTH 2048
+//#define FLAG_WIDTH 2048
 int put(char* key,char* value);
 int merge();
 
@@ -44,13 +44,14 @@ int merge2(int full_lev);
 struct KNODE{
 	//char * key;
 	char key[MAX_KEY_LENGTH];
-	struct KNODE * next;
+	//struct KNODE * next;
 	//struct KNODE * pre;
-	struct KNODE * flag_next;
+	//struct KNODE * flag_next;
 	
-	struct KNODE *flag[FLAG_LEVEL_MAX];
+	struct KNODE *flag[FLAG_LEVEL_MAX];//flag[0] is equivalent to *next
 	//char *value;
 	char value[MAX_VALUE_LENGTH];
+	//int curr_max;
 };
 
 
@@ -58,7 +59,8 @@ struct KNODE{
 struct ATABLE{
 	int kv_bytes;//totabl bytes
 	int kv_num;//kv numbers
-	struct KNODE *key_head;//the key link list head
+	struct KNODE key_head;//the key link list head
+	int curr_max;
 
 
 };

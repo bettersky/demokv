@@ -10,6 +10,7 @@ int generate(int limit);
 void print_table(char *str, char *table);
 
 void print_atable(char *str, struct ATABLE *table);
+void print_knode_chain(char *str, struct KNODE *head);
 
 uint64_t simple_pow(int base , int exp); 
 
