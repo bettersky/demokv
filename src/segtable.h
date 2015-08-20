@@ -29,7 +29,7 @@
 #define MAX_VALUE_LENGTH 1024 //for KNODE
 
 #define FLAG_LEVEL_MAX 50
-#define FLAG_LEVEL_PUFFER 5
+#define FLAG_LEVEL_PUFFER 3
 
 
 //#define FLAG_WIDTH 2048
@@ -59,7 +59,7 @@ struct KNODE{
 struct ATABLE{
 	int kv_bytes;//totabl bytes
 	int kv_num;//kv numbers
-	struct KNODE key_head;//the key link list head
+	struct KNODE *key_head;//the key link list head
 	int curr_max;
 
 

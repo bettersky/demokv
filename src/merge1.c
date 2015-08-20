@@ -15,6 +15,9 @@ int merge1_num=0;
 
 int merge_counter[2]={0};
 
+double acc_duration=0;
+extern uint64_t put_counter;
+
 int merge1(int full_lev){
 //printf("\nI am merge1 \n");
 	if(full_lev==MAX_LEV-1){
@@ -34,7 +37,7 @@ int merge1(int full_lev){
 		//if(merge_counter[counter_flag]==5) exit(3);
 	}
 	merge_counter[counter_flag]++;
-printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, full_lev=%d, counter=%d \n", full_lev,merge_counter[counter_flag]);
+printf("\n I am merge1, full_lev=%d, counter=%d >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n", full_lev,merge_counter[counter_flag]);
 double duration=0;
 struct timespec begin, end; 
 clock_gettime(CLOCK_MONOTONIC,&begin); //begin insert , so begin counting 
@@ -42,9 +45,15 @@ clock_gettime(CLOCK_MONOTONIC,&begin); //begin insert , so begin counting
 	char *tip_table=NULL;
 	char *tip_first_key=NULL;
 	char *tip_last_key=NULL;
+
+double duration_give_tip=0;
+struct timespec begin_give_tip, end_give_tip; 
+clock_gettime(CLOCK_MONOTONIC,&begin_give_tip); //begin insert , so begin counting 
+
 	if(full_lev==-1){
 
 		tip_table=malloc(test_seg_bytes);//should be freed
+		//printf("tip in merge1, tip=%p\n",tip_table);
 		memset(tip_table,0, test_seg_bytes);	
 		//printf("..............\n");	
 
@@ -58,7 +67,12 @@ clock_gettime(CLOCK_MONOTONIC,&begin); //begin insert , so begin counting
 		give_tip_table(&tip_table, full_lev,&tip_first_key, &tip_last_key );
 
 	}
+	
+clock_gettime(CLOCK_MONOTONIC,&end_give_tip); //begin insert , so begin counting
+duration_give_tip=( (int)end_give_tip.tv_sec+((double)end_give_tip.tv_nsec)/s_to_ns ) - ( (int)begin_give_tip.tv_sec+((double)begin_give_tip.tv_nsec)/s_to_ns );
+
 //printf("xxxxxxxxxxx\n");	
+//print_table("tip",tip_table);
 	struct FINDER_ENTRY * crossed_entry_chain=(struct FINDER_ENTRY*)malloc(sizeof(struct FINDER_ENTRY));//for create big_table
 								//all links in the chain should be freed
 				//this chain is a part in the total entry link list. now this is freed in split_big_table()
@@ -82,7 +96,15 @@ clock_gettime(CLOCK_MONOTONIC,&begin); //begin insert , so begin counting
 	char *big_table=(char*)malloc(big_table_size);
 	//this should be freed after split, because split function mallocs new space to store data
 	memset(big_table,0, big_table_size );
+	
+double duration_fill_big=0;
+struct timespec begin_fill_big, end_fill_big; 
+clock_gettime(CLOCK_MONOTONIC,&begin_fill_big); //begin insert , so begin counting 
+
 	fill_big_table(big_table, tip_table, crossed_entry_chain, crossed_num);
+	
+clock_gettime(CLOCK_MONOTONIC,&end_fill_big); //begin insert , so begin counting
+duration_fill_big=( (int)end_fill_big.tv_sec+((double)end_fill_big.tv_nsec)/s_to_ns ) - ( (int)begin_fill_big.tv_sec+((double)begin_fill_big.tv_nsec)/s_to_ns );
 
 	if(counter_flag==0){
 		//print_table("tip_table",tip_table);
@@ -90,7 +112,17 @@ clock_gettime(CLOCK_MONOTONIC,&begin); //begin insert , so begin counting
 	}
 	
 //printf("yyyyyyyyyyyy\n");	
+
+double duration_split=0;
+struct timespec begin_split, end_split; 
+clock_gettime(CLOCK_MONOTONIC,&begin_split); //begin insert , so begin counting 
+
 	split_big_table(big_table, crossed_num,  insert_point, full_lev+1);
+
+clock_gettime(CLOCK_MONOTONIC,&end_split); //begin insert , so begin counting
+duration_split=( (int)end_split.tv_sec+((double)end_split.tv_nsec)/s_to_ns ) - ( (int)begin_split.tv_sec+((double)begin_split.tv_nsec)/s_to_ns );
+
+
 	free(big_table);
 	if(full_lev==-1){
 		free(tip_table);		
@@ -101,10 +133,15 @@ clock_gettime(CLOCK_MONOTONIC,&begin); //begin insert , so begin counting
 	
 	free(crossed_entry_chain);
 	//free
+	
 clock_gettime(CLOCK_MONOTONIC,&end); //begin insert , so begin counting
 duration=( (int)end.tv_sec+((double)end.tv_nsec)/s_to_ns ) - ( (int)begin.tv_sec+((double)begin.tv_nsec)/s_to_ns );
-printf("merge duration=%f s\n",duration);
-printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, end, full_lev=%d, counter=%d \n", full_lev,merge_counter[counter_flag]);
+
+acc_duration+=duration;
+double fini= (double)put_counter/1000000000;
+printf("merge duration=%f s, acc_duration=%f, crossed_num=%d, put_counter=%llu, finished=%f\n",duration, acc_duration,crossed_num, put_counter,fini);
+printf("duration_give_tip=%f, duration_fill_big=%f, duration_split=%f \n", duration_give_tip, duration_fill_big, duration_split);
+printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>I am merge1, end,   counter=%d \n",  merge_counter[counter_flag]);
 
 }
 

@@ -21,7 +21,7 @@ int put(char* key,char* value){
 		//merge to lev0 code --begin
 		//printf("___________-I am put,levels_summary=%p \n",levels_summary );
 		//exit(1);
-		//merge();
+		merge();
 		//merge to lev0 code --end
 		//put(key,value);//after merging, call put() again to finish putting
 	}
@@ -34,10 +34,10 @@ int put(char* key,char* value){
 	
 	//using flag_alg --begin
 	
-	int cmp_res;
-	if(active_table->key_head.flag[0]!=NULL){		//active_table->key_head replaces  active_chain_head
+	//int cmp_res;
+	if(active_table->key_head->flag[0]!=NULL){		//active_table->key_head replaces  active_chain_head
 			char *searching_key=key;
-			struct KNODE* insert_point=search_insert_point(active_table->curr_max, &(active_table->key_head), searching_key);
+			struct KNODE* insert_point=search_insert_point(active_table->curr_max, active_table->key_head, searching_key);
 			int com_res=strcmp(key, insert_point->key);
 			if(com_res!=0){//then must be >0 and less than the next key, so we insert
 				new_kv->flag[0]=insert_point->flag[0];
@@ -49,11 +49,13 @@ int put(char* key,char* value){
 	}
 	else{
 		//active_chain_head->next=new_kv;
-		active_table->key_head.flag[0]=new_kv;
+		active_table->key_head->flag[0]=new_kv;
 	
 	}
 	
-	//print_knode_chain("",active_chain_head);
+	active_table->kv_num++;
+	active_table->kv_bytes+=key_size+value_size + 2; //2 '\0' characters 
+	//print_knode_chain("",active_table->key_head);
 	return 1;
 
 	//using flag_alg --end

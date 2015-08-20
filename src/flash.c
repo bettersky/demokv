@@ -72,7 +72,7 @@ int write_seg(char *seg_buffer, uint64_t serial_num){
 uint64_t ftl_addr_map(uint64_t serial_num, char *arg){
 	uint64_t phy_seg=serial_num;	
 	
-	if(phy_seg>device.segment_total){
+	if(phy_seg>device.segment_total-10){//reserved
 		printf("error in ftl_addr_map, phy_seg>device.segment_total, exit\n");
 		exit(1);
 	}

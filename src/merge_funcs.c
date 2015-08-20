@@ -8,9 +8,63 @@
 
 int fill_sorted_active_table(char *tip_table,char **tip_first_key, char **tip_last_key){
 	struct ATABLE *active_table_old=active_table;//active_table_old will be a sorted link list
+	
+	
 	active_table = (struct ATABLE *)malloc(sizeof(struct ATABLE));//this should be able to serve new writes immediatly
 	memset(active_table, 0 , sizeof(struct ATABLE));
+	active_table->key_head=malloc(sizeof(struct KNODE));
+	memset( active_table->key_head, 0,sizeof(struct KNODE));
 	
+	//print_knode_chain("",active_table_old->key_head);
+	
+	//print_atable("fill_sorted_active_table",active_table_old);
+	//printf("tip in fill, tip=%p\n",tip_table);
+	struct KNODE *curr_node;
+	char *sorted_active_table=tip_table;
+	//printf("tip in fill, tip=%p,sorted_active_table=%p\n",tip_table,sorted_active_table);
+	int copied_size=0;//indicates the total bytes of data have been copied to sorted_active_table
+	
+	for(curr_node=active_table_old->key_head->flag[0];curr_node->flag[0]!=NULL;curr_node=curr_node->flag[0]){
+	//printf("xxxx, %s, s=%s,  copied_size=%d, dd=%d\n",  curr_node->key,sorted_active_table, copied_size,strlen(curr_node->key)+1);
+		memcpy(sorted_active_table+copied_size, curr_node->key ,strlen(curr_node->key)+1);
+		//printf("sorted_active_table=%s\n",sorted_active_table);
+		
+		copied_size+=strlen(curr_node->key)+1;
+		memcpy(sorted_active_table+copied_size, curr_node->value, strlen(curr_node->value)+1 );
+		copied_size+=strlen(curr_node->value)+1;	
+		
+	}
+	//exit(1);
+	//print_table("sort in fill 0", sorted_active_table);
+	
+	//leave the last for getting the last key without if clause --begin
+	int last_key_offset=copied_size;
+	memcpy(sorted_active_table+copied_size, curr_node->key, strlen(curr_node->key)+1 );
+	copied_size+=strlen(curr_node->key)+1;
+	memcpy(sorted_active_table+copied_size, curr_node->value, strlen(curr_node->value)+1 );
+	copied_size+=strlen(curr_node->value)+1;
+	char *active_first_key=sorted_active_table;//active_table_old->key_head->key;
+	char *active_last_key=sorted_active_table+last_key_offset;//curr_node->key;
+	//printf("first_key:%s last_key:%s\n",active_first_key,active_last_key);
+	//leave the last for getting the last key without if clause --end
+	//construct a sorted table --end
+	//free struct ATABLE *active_table_old
+	
+	//print_table("sort in fill", sorted_active_table);
+		*tip_first_key=active_first_key;
+		*tip_last_key=active_last_key;
+	for(curr_node=active_table_old->key_head;curr_node!=NULL;){
+		//free(curr_node->key);
+		//free(curr_node->value);
+		struct KNODE *temp=curr_node;
+		curr_node=curr_node->flag[0];
+		free(temp);
+			//free big table
+	}
+	free(active_table_old);
+	//free(active_table_old->key_head);
+	
+	//printf("--------fill_sorted_active_table end\n");
 
 }
 
@@ -336,23 +390,7 @@ int i;
 	for(i=0;i<splitted_tables_num;i++){
 		//printf("new_serials %d: %d\n",i+1, new_serials[i]);
 	}
-	//printf("insert_point=%p, first_tables_entry[1]=%p,next=%p\n", insert_point,first_tables_entry[1],first_tables_entry[1]->next);
-	//assert
-	//allocate new serials --end
 	
-	//new tables written --begin
-	
-	//new tables written --end
-//lev0 operations --begin
-//give the splitted_tables_pointer to the *table in entry
-
-//lev0 operations --end
-	//update finder entry list --begin
-		//case 1: no crossing and insert point is null. crossing is 0
-	
-		//case 2: no crossing and insert point is not null. crossing is -1
-		
-		//case 3: crossing is positive 
 
 		struct FINDER_ENTRY *new_entry;
 		for(i=0;i<splitted_tables_num;i++){
@@ -391,15 +429,7 @@ int i;
 	
 		}
 		
-//printf("22222222222222222222\n");
-	//update finder entry list --end
-	
-	//other updates --begin
-	
-	//printf("--------split_big_table1 end\n");
 
-
-	//other updates --end
 	
 	//free
 	free(new_serials);

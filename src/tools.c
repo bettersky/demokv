@@ -14,7 +14,10 @@ void print_table(char* str,char *table){
 				printf("NULL\n");
 				break;
 			}
-			if(*test==0) break;
+			if(*test==0){
+				break;
+			}	
+			
 				printf("%03d: key=%s, ", ++i, test);
 				size+=strlen(test)+1;
 				test=test+strlen(test)+1;
@@ -89,4 +92,20 @@ void generate_string(char *value, int max){
 	
 	i=rand();
 	sprintf(value, "%d",i);
+}
+
+
+void print_level_entry(char *str, struct FINDER_ENTRY * first_entry){
+	printf("\n---%s------------------------------------------------------\n",str);
+	
+	int i;
+	while(first_entry!=NULL){//print test	
+		i++;
+		printf("%d: first_key=%s,  last_key=%s ",i, first_entry->first_key, first_entry->last_key);
+		first_entry=first_entry->next;		
+	}
+	printf("\n");
+	printf("------------------------------------------------------%s---\n\n",str);
+
+
 }

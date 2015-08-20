@@ -46,11 +46,12 @@ int test(){
 	
 
 	//kv_write();
-	seq_write();
-	//random_write();
+	//seq_write();
+	random_write();
 
-	//print_tail();
+	
 	print_tail2();
+	print_tail();
 	printf("Test end\n");
 }
 
@@ -58,9 +59,9 @@ int test(){
 void print_tail2(){
 	int i;
 	for(i=0;i<FLAG_LEVEL_MAX;i++){
-		if(active_table->key_head.flag[i]!=NULL){
+		if(active_table->key_head->flag[i]!=NULL){
 			int j=0;
-			struct KNODE *temp= active_table->key_head.flag[i];
+			struct KNODE *temp= active_table->key_head->flag[i];
 			while(temp!=NULL){
 				j++;
 				temp=temp->flag[i];

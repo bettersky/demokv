@@ -8,7 +8,7 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 	
 	struct KNODE *curr_node=active_table_old->key_head;//need to free, a linked list
 	int i;
-
+//sort --begin
 	for(;curr_node->next!=NULL;){ //sort the link list
 	//every cycle make the smallest remain knode  to the current position
 	//compare one by one with the following knodes, if this is bigger, then exchange their KV data
@@ -45,6 +45,8 @@ int fill_sorted_active_table(char *sorted_active_table,char **tip_first_key, cha
 		curr_node=curr_node->next;//sort the next node
 		//printf("end for 2. curr_node=%p\n",curr_node);
 	}
+//sort --end
+//now active_table_old point to the sorted table
 
 	int copied_size=0;//indicates the total bytes of data have been copied to sorted_active_table
 	for(curr_node=active_table_old->key_head;curr_node->next!=NULL;curr_node=curr_node->next){

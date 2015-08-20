@@ -8,7 +8,7 @@ extern struct ATABLE *active_table;//defined in egtable.h
 
 struct KNODE * search_insert_point(int curr_flag_level, struct KNODE *bigger_flag_point, char *searching_key){
 	int i;
-	struct KNODE *head_recorder=&(active_table->key_head);//bigger_flag_point;
+	struct KNODE *head_recorder=active_table->key_head;//bigger_flag_point;
 	//printf(">>>>>search_insert_point begin, put_counter=%d>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n",put_counter);
 	//printf("in search_insert_point, curr_flag_level=%d, searching_key=%s\n",curr_flag_level,  searching_key );
 	

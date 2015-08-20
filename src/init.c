@@ -126,6 +126,8 @@ int init_ftl(){
 int init_memory(){
 	active_table=malloc(sizeof(struct ATABLE));
 	memset(active_table, 0, sizeof(struct ATABLE));
+	active_table->key_head=malloc(sizeof(struct KNODE));
+	memset( active_table->key_head, 0,sizeof(struct KNODE));
 	
 	//active_chain_head=(struct KNODE*)malloc(sizeof(struct KNODE));
 	//memset(active_chain_head, 0, sizeof(struct KNODE));

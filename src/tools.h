@@ -18,4 +18,6 @@ void print_bit_map(char *,char * bit_map,int size);
 
 void generate_string(char *value, int max);
 
+void print_level_entry(char *str, struct FINDER_ENTRY * first_entry);
+
 #endif
